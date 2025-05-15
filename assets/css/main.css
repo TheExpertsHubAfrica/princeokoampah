@@ -70,8 +70,8 @@
 # General Styling & Shared Classes
 --------------------------------------------------------------*/
 body {
-  color: var(--default-color);
-  background-color: var(--background-color);
+  color: #ffffff;
+  background-color: #060606;
   font-family: var(--default-font);
 }
 
@@ -167,7 +167,7 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 32px;
+  width: 150px;
   margin-right: 8px;
 }
 
