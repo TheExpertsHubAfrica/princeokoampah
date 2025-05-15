@@ -697,6 +697,10 @@ section,
   z-index: 3;
 }
 
+.container img {
+  margin: 5px;
+}
+
 .hero h2 {
   margin: 0;
   font-size: 64px;
