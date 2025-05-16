@@ -580,7 +580,7 @@ h6 {
 --------------------------------------------------------------*/
 .footer {
   color: var(--default-color);
-  background-color: var(--background-color);
+  background-color: black;
   font-size: 14px;
   padding: 40px 0;
   position: relative;
@@ -668,22 +668,23 @@ h6 {
   right: 15px;
   bottom: -15px;
   z-index: 99999;
-  background-color: var(--accent-color);
+  background-color: var(--background-color);
   width: 44px;
   height: 44px;
-  border-radius: 50px;
   transition: all 0.4s;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 30%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
 .scroll-top i {
   font-size: 24px;
-  color: var(--contrast-color);
+  color: var(--heading-color);
   line-height: 0;
 }
 
 .scroll-top:hover {
-  background-color: color-mix(in srgb, var(--accent-color), transparent 20%);
-  color: var(--contrast-color);
+  background-color: color-mix(in srgb, var(--heading-color), transparent 20%);
+  color: var(--background-color);
 }
 
 .scroll-top.active {
@@ -994,6 +995,10 @@ section,
 /*--------------------------------------------------------------
 # Services Section
 --------------------------------------------------------------*/
+.services {
+  background-color: var(--heading-color);
+}
+
 .services .service-item {
   background-color: var(--surface-color);
   box-shadow: 0px 5px 90px 0px rgba(0, 0, 0, 0.1);
@@ -1006,7 +1011,7 @@ section,
 
 .services .service-item .icon {
   color: var(--contrast-color);
-  background: var(--accent-color);
+  background: var(--heading-color);
   margin: 0;
   width: 64px;
   height: 64px;
@@ -1017,6 +1022,10 @@ section,
   margin-bottom: 20px;
   font-size: 28px;
   transition: ease-in-out 0.3s;
+}
+
+.services h2 {
+  color: var(--contrast-color);
 }
 
 .services .service-item h3 {
