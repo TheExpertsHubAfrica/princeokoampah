@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Book a Service - Prince Okoampah</title>
+    <meta name="description" content="Book services with Prince Okoampah: web development, public speaking, leadership, and more.">
+    <meta name="keywords" content="Prince Okoampah, booking, web development, public speaking, leadership, voice coaching">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+</head>
+
+<body class="portfolio-details-page">
+
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+            <a href="index.html" class="logo d-flex align-items-center">
+                <h1 class="sitename"><img src="assets/img/raw sign.png" alt=""></h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="index.html?#hero">Home<br></a></li>
+                    <li><a href="index.html?#about">About</a></li>
+                    <li><a href="index.html?#services">Services</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="#">Dropdown 1</a></li>
+                            <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                                <ul>
+                                    <li><a href="#">Deep Dropdown 1</a></li>
+                                    <li><a href="#">Deep Dropdown 2</a></li>
+                                    <li><a href="#">Deep Dropdown 3</a></li>
+                                    <li><a href="#">Deep Dropdown 4</a></li>
+                                    <li><a href="#">Deep Dropdown 5</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Dropdown 2</a></li>
+                            <li><a href="#">Dropdown 3</a></li>
+                            <li><a href="#">Dropdown 4</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="main">
+
+        <!-- Page Title -->
+        <div class="page-title" data-aos="fade">
+            <div class="container d-lg-flex justify-content-between align-items-center">
+                <h1 class="mb-2 mb-lg-0">Book a Service</h1>
+                <nav class="breadcrumbs">
+                    <ol>
+                        <li><a href="index.html">Home</a></li>
+                        <li class="current">Book a Service</li>
+                    </ol>
+                </nav>
+            </div>
+        </div><!-- End Page Title -->
+
+        <!-- Booking Section -->
+        <section id="booking" class="section">
+    <div class="container" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h2 class="mb-4">Book a Service with Prince Okoampah</h2>
+                <p class="mb-4">
+                    Please fill out the form below to book any of Prince's services. We will contact you to confirm your booking and discuss further details.
+                </p>
+                
+                <!-- Status Alert Container -->
+                <div id="status-alert" class="alert alert-info d-none" role="alert">
+                    <div class="d-flex align-items-center">
+                        <div id="status-spinner" class="spinner-border me-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading mb-1" id="status-title">Processing your request</h5>
+                            <p class="mb-0" id="status-message">Please wait while we submit your booking.</p>
+                            <div id="status-progress" class="progress mt-2 d-none" style="height: 6px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Form -->
+                <form id="booking-form" class="php-email-form">
+                    <div class="row gy-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" id="name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" name="email" class="form-control" id="email" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" name="phone" class="form-control" id="phone" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="service" class="form-label">Service <span class="text-danger">*</span></label>
+                            <select name="service" id="service" class="form-select" required>
+                                <option value="" disabled selected>Select a service</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Public Speaking">Public Speaking</option>
+                                <option value="Leadership Coaching">Leadership Coaching</option>
+                                <option value="Voice Coaching">Voice Coaching</option>
+                                <option value="Entrepreneurship Consulting">Entrepreneurship Consulting</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date" class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                            <input type="date" name="date" class="form-control" id="date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="time" class="form-label">Preferred Time</label>
+                            <input type="time" name="time" class="form-control" id="time">
+                        </div>
+                        <div class="col-12">
+                            <label for="details" class="form-label">Additional Details / Requirements</label>
+                            <textarea name="details" class="form-control" id="details" rows="4" placeholder="Tell us more about your needs..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn mbaButton mt-3" id="submit-btn">Submit Booking</button>
+                        </div>
+                    </div>
+                    <p class="mt-3 small text-muted">* Required fields. Your information will be kept confidential.</p>
+                </form>
+                
+                <!-- Status Check Section (for returning users) -->
+                <div id="status-check" class="mt-4 border-top pt-4 d-none">
+                    <h5>Check Your Booking Status</h5>
+                    <p>Enter your email to check the status of your existing booking.</p>
+                    <div class="input-group mb-3">
+                        <input type="email" class="form-control" id="status-email" placeholder="Your email address">
+                        <button class="btn btn-outline-secondary" type="button" id="check-status-btn">Check Status</button>
+                    </div>
+                    <div id="status-result" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add this script to your page -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('booking-form');
+    const statusAlert = document.getElementById('status-alert');
+    const statusTitle = document.getElementById('status-title');
+    const statusMessage = document.getElementById('status-message');
+    const statusProgress = document.getElementById('status-progress');
+    const progressBar = statusProgress.querySelector('.progress-bar');
+    const submitBtn = document.getElementById('submit-btn');
+    
+    // Check if there's a submission ID in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const submissionId = urlParams.get('submission');
+    
+    if (submissionId) {
+        // Show status check section
+        document.getElementById('status-check').classList.remove('d-none');
+        checkSubmissionStatus(submissionId);
+    }
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Disable submit button
+        submitBtn.disabled = true;
+        
+        // Show status alert
+        statusAlert.classList.remove('d-none');
+        statusProgress.classList.remove('d-none');
+        
+        // Simulate progress (for demo purposes)
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            progressBar.style.width = `${progress}%`;
+            if (progress >= 100) clearInterval(progressInterval);
+        }, 200);
+        
+        // Prepare form data
+        const formData = new FormData(form);
+        const formObject = {};
+        formData.forEach((value, key) => formObject[key] = value);
+        
+        // Submit to Google Apps Script
+        fetch('https://script.google.com/macros/s/AKfycbxerLUvxd-9HF0f_HOcIEB8S3QmMMYwDQ1rmNmAsSV-UiSI7warD6KhGVkItgDVA6Gn/exec', {
+            method: 'POST',
+            body: JSON.stringify(formObject),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update status to success
+                statusTitle.textContent = 'Booking Submitted!';
+                statusMessage.innerHTML = `Thank you for your booking! Your reference ID is: <strong>${data.submissionId}</strong>. We'll contact you shortly.`;
+                statusAlert.classList.remove('alert-info');
+                statusAlert.classList.add('alert-success');
+                document.getElementById('status-spinner').classList.add('d-none');
+                
+                // Show status check section
+                document.getElementById('status-check').classList.remove('d-none');
+                
+                // Update URL with submission ID
+                window.history.pushState({}, '', `?submission=${data.submissionId}`);
+            } else {
+                throw new Error(data.message || 'Submission failed');
+            }
+        })
+        .catch(error => {
+            statusTitle.textContent = 'Submission Error';
+            statusMessage.textContent = error.message;
+            statusAlert.classList.remove('alert-info');
+            statusAlert.classList.add('alert-danger');
+            document.getElementById('status-spinner').classList.add('d-none');
+            submitBtn.disabled = false;
+        })
+        .finally(() => {
+            clearInterval(progressInterval);
+            statusProgress.classList.add('d-none');
+        });
+    });
+    
+    // Status check functionality
+    document.getElementById('check-status-btn').addEventListener('click', function() {
+        const email = document.getElementById('status-email').value;
+        if (email) {
+            checkSubmissionStatus(email);
+        }
+    });
+    
+    function checkSubmissionStatus(identifier) {
+        const statusResult = document.getElementById('status-result');
+        statusResult.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+        
+        fetch(`https://script.google.com/macros/s/AKfycbxerLUvxd-9HF0f_HOcIEB8S3QmMMYwDQ1rmNmAsSV-UiSI7warD6KhGVkItgDVA6Gn/exec?action=status&id=${encodeURIComponent(identifier)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let statusBadge;
+                    switch(data.status) {
+                        case 'Received':
+                            statusBadge = '<span class="badge bg-primary">Received</span>';
+                            break;
+                        case 'Processing':
+                            statusBadge = '<span class="badge bg-info">Processing</span>';
+                            break;
+                        case 'Confirmed':
+                            statusBadge = '<span class="badge bg-success">Confirmed</span>';
+                            break;
+                        case 'Completed':
+                            statusBadge = '<span class="badge bg-secondary">Completed</span>';
+                            break;
+                        default:
+                            statusBadge = '<span class="badge bg-warning">Pending</span>';
+                    }
+                    
+                    statusResult.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Booking Status</h5>
+                                <div class="mb-3">
+                                    <strong>Reference ID:</strong> ${data.submissionId}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Status:</strong> ${statusBadge}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Service:</strong> ${data.service}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>Submitted:</strong> ${new Date(data.timestamp).toLocaleString()}
+                                </div>
+                                ${data.notes ? `<div class="alert alert-light mt-3">${data.notes}</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    statusResult.innerHTML = `<div class="alert alert-warning">${data.message || 'No booking found with that email or ID.'}</div>`;
+                }
+            })
+            .catch(error => {
+                statusResult.innerHTML = `<div class="alert alert-danger">Error checking status: ${error.message}</div>`;
+            });
+    }
+});
+</script>
+        <!-- /Booking Section -->
+
+    </main>
+
+    <footer id="footer" class="footer accent-background">
+
+        <div class="container">
+            <div class="copyright text-center ">
+                <p>© <span>Copyright</span> <strong class="px-1 sitename">Prince Okoampah</strong> <span>All Rights Reserved</span></p>
+            </div>
+            <div class="social-links d-flex justify-content-center">
+                <a href="https://twitter.com/princeokoampah"><i class="bi bi-twitter-x"></i></a>
+                <a href="https://facebook.com/princeokoampah"><i class="bi bi-facebook"></i></a>
+                <a href="https://instagram.com/princeokoampah"><i class="bi bi-instagram"></i></a>
+                <a href="https://linkedin.com/in/princeokoampah"><i class="bi bi-linkedin"></i></a>
+            </div>
+            <div class="credits">
+                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+            </div>
+        </div>
+
+    </footer>
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/typed.js/typed.umd.js"></script>
+    <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
