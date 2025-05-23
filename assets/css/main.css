@@ -275,11 +275,18 @@ h6 {
   margin-top: 10px;
 }
 
+.about-img {
+  min-width: 530px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .profile-container {
     display: flex;
     flex-direction: column;
+  }
+  .about-img {
+  min-width: 0px; /* Allowing it to shrink on smaller screens */
   }
   .profile {
     width: calc(100% - 4px); /* Adjusted for smaller screens */
