@@ -285,6 +285,9 @@ h6 {
     display: flex;
     flex-direction: column;
   }
+  .header .logo img {
+  margin-left: -40px;
+  }
   .about-img {
   min-width: 0px; /* Allowing it to shrink on smaller screens */
   }
@@ -329,7 +332,7 @@ h6 {
 }
 
 .header .logo img {
-  width: 150px;
+  width: 250px;
   margin-right: 8px;
 }
 
