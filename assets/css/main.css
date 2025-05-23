@@ -31,9 +31,9 @@
 :root {
   --nav-color: #ffffff;  /* The default color of the main navmenu links */
   --nav-hover-color: #ffffff; /* Applied to main navmenu links when they are hovered over or active */
-  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
+  --nav-mobile-background-color: #000000; /* Used as the background color for mobile navigation menu */
   --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #212529; /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-color: #9fa3a7; /* Used for navigation links of the dropdown items in the navigation menu. */
   --nav-dropdown-hover-color: #d0bb8e; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
@@ -226,7 +226,7 @@ h6 {
 
 .profile-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   position: relative;
   width: 100%;
   height: 100%;
@@ -506,13 +506,19 @@ h6 {
     inset: 60px 20px 20px 20px;
     padding: 10px 0;
     margin: 0;
-    border-radius: 6px;
+    color: var(--nav-color);
     background-color: var(--nav-mobile-background-color);
     border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
     box-shadow: none;
     overflow-y: auto;
     transition: 0.3s;
     z-index: 9998;
+  }
+
+  .navmenu>ul>li {
+    padding: 15px 20px;
+    white-space: nowrap;
+    border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
   }
 
   .navmenu a,
