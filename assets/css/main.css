@@ -1139,6 +1139,10 @@ section,
   font-weight: 700;
 }
 
+.upcoming-posts {
+  padding: 60px 0;
+}
+
 .stats .stats-item p {
   padding: 0;
   margin: 0;
