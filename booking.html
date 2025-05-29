@@ -114,7 +114,7 @@
                     3. The form fields' "name" attributes should match the expected column headers in your sheet.
                 -->
                 <form id="booking-form" class="php-email-form"
-                    action="https://script.google.com/macros/s/AKfycbw1_9MA-CcdpnzOqGVUCuDp4RyxyjFvJ4n2K-9ikS83OmJwW6PlEk8zJIMgJtnuLLhX/exec"
+                    action="https://script.google.com/macros/s/AKfycbxqpZuCDNk-gbCqp91LsLRsuKSw8jgMG8M3p6znDgLP9uRAQ35ANupHqBD6sBoVhJlh/exec"
                     method="POST" target="hidden_iframe" onsubmit="return handleFormSubmit();">
                     <div class="row gy-3">
                       <div class="col-md-6">
@@ -145,8 +145,8 @@
                         <input type="date" name="date" class="form-control" id="date" required>
                       </div>
                       <div class="col-md-6">
-                        <label for="time" class="form-label">Preferred Time</label>
-                        <input type="time" name="time" class="form-control" id="time">
+                        <label for="time" class="form-label">Preferred Time <span class="text-danger">*</span></label>
+                        <input type="time" name="time" class="form-control" id="time" required>
                       </div>
                       <div class="col-12">
                         <label for="details" class="form-label">Additional Details / Requirements</label>
