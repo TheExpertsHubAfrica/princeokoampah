@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Book a Service - Prince Okoampah</title>
+    <meta name="description" content="Book services with Prince Okoampah: web development, public speaking, leadership, and more.">
+    <meta name="keywords" content="Prince Okoampah, booking, web development, public speaking, leadership, voice coaching">
+
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+    <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+    <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+    <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="assets/css/main.css" rel="stylesheet">
+</head>
+
+<body class="portfolio-details-page">
+
+    <header id="header" class="header d-flex align-items-center sticky-top">
+        <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+            <a href="index.html" class="logo d-flex align-items-center">
+                <h1 class="sitename"><img src="assets/img/sharpSign.jpg" alt=""></h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="index.html?#hero">HOME<br></a></li>
+                    <li><a href="index.html?#about">ABOUT</a></li>
+                    <li><a href="index.html?#services">PROFILE</a></li>
+                    <li><a href="#portfolio">THE JOURNEY</a></li>
+                    <!-- <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                        <ul>
+                            <li><a href="#">Dropdown 1</a></li>
+                            <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+                                <ul>
+                                    <li><a href="#">Deep Dropdown 1</a></li>
+                                    <li><a href="#">Deep Dropdown 2</a></li>
+                                    <li><a href="#">Deep Dropdown 3</a></li>
+                                    <li><a href="#">Deep Dropdown 4</a></li>
+                                    <li><a href="#">Deep Dropdown 5</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Dropdown 2</a></li>
+                            <li><a href="#">Dropdown 3</a></li>
+                            <li><a href="#">Dropdown 4</a></li>
+                        </ul>
+                    </li> -->
+                    <li><a href="hiring.html">VACANCIES</a></li>
+                    <li><a href="#contact">CONTACT</a></li>
+                    <li>
+                        <a href="booking.html" class="mbaButton" style="display:inline-block;padding:10px 25px;border:2px solid #e6d3a3;background:transparent;color:#e6d3a3;font-family:'Poppins',sans-serif;font-size:15px;font-weight:500;letter-spacing:1px;text-align:center;text-decoration:none;transition:background 0.2s,color 0.2s,border 0.2s;">
+                        BOOK PRINCE
+                        </a>
+                    </li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="main">
+
+        <!-- Page Title -->
+        <div class="page-title accent-background" data-aos="fade">
+            <div class="container d-lg-flex justify-content-between align-items-center">
+                <h1 class="mb-2 mb-lg-0">Join Our Team</h1>
+                <nav class="breadcrumbs">
+                    <ol>
+                        <li><a href="index.html">Home</a></li>
+                        <li class="current">Hiring</li>
+                    </ol>
+                </nav>
+            </div>
+        </div><!-- End Page Title -->
+
+        <!-- Open Positions Section -->
+        <section id="positions" class="section" style="background: #0e0d0d;">
+            <div class="container" data-aos="fade-up">
+                <h2 class="text-center mb-5" style="padding-top: 20px; color: #7c5c1e;">Current Openings</h2>
+                <div class="row justify-content-center gy-4" id="positionsContainer">
+                    <!-- Positions will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Application Section -->
+        <section id="application" class="section" style="background: #111111;">
+            <div class="container" data-aos="fade-up">
+                <div class="mx-auto" style="max-width: 800px;">
+                    <div id="successMessage" class="alert alert-success text-center d-none" style="border-radius:0;background:#d0bb8e;border:none;color:#222;">
+                        <h3>Thank you for your application!</h3>
+                        <p>We've received your application and will review it shortly. You'll receive a confirmation email soon.</p>
+                    </div>
+                    <h2 class="text-center mb-4" style="padding-top: 20px; color: #7c5c1e;">Application Form</h2>
+                    <form id="applicationForm"
+                        action="https://script.google.com/macros/s/AKfycbzDzh_jwQW-XnJknFjElQ0Hm2-66dEHBe89vN0fQefwxjCvvTXTPNgoypvqK0Senau4GA/exec"
+                        method="POST"
+                        enctype="multipart/form-data"
+                        style="background: #0c0c0c; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 2.5rem;">
+                        <div class="row gy-3">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" id="fullName" name="fullName" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" id="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" id="phone" name="phone" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="position" class="form-label">Position Applying For <span class="text-danger">*</span></label>
+                                <select id="position" name="position" class="form-select" required>
+                                    <option value="">Select a position</option>
+                                    <!-- Positions will be loaded here -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="experience" class="form-label">Years of Experience <span class="text-danger">*</span></label>
+                                <select id="experience" name="experience" class="form-select" required>
+                                    <option value="">Select your experience level</option>
+                                    <option value="0-2">0-2 years</option>
+                                    <option value="3-5">3-5 years</option>
+                                    <option value="6-10">6-10 years</option>
+                                    <option value="10+">10+ years</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="portfolio" class="form-label">Portfolio/Website Link</label>
+                                <input type="url" id="portfolio" name="portfolio" class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <label for="coverLetter" class="form-label">Cover Letter <span class="text-danger">*</span></label>
+                                <textarea id="coverLetter" name="coverLetter" class="form-control" rows="5" required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Upload Your CV (PDF, DOC, DOCX - Max 5MB) <span class="text-danger">*</span></label>
+                                <div class="d-flex flex-column">
+                                    <label for="cvUpload" class="btn btn-outline-secondary mb-2" style="border-radius:4px; background:#f7f3e8; color:#7c5c1e; border:none;">Choose File</label>
+                                    <input type="file" id="cvUpload" name="cvUpload" accept=".pdf,.doc,.docx" style="display:none;" required>
+                                    <span id="fileName" class="small text-muted">No file chosen</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn mbaButton mt-3 w-100" style="background:#7c5c1e; color:#fff;">Submit Application</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <script>
+            // Current job openings
+            const jobOpenings = [
+                "Content Creator",
+                "Art Director",
+                "Video Editor"
+            ];
+
+            // Load positions into the grid and dropdown
+            document.addEventListener('DOMContentLoaded', function() {
+                const positionsContainer = document.getElementById('positionsContainer');
+                const positionDropdown = document.getElementById('position');
+
+                jobOpenings.forEach(position => {
+                    // Add to positions grid
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4';
+                    col.innerHTML = `<div class="p-4 h-100" style="background:#f7f3e8; border-radius:8px; border-left:4px solid #7c5c1e; box-shadow:0 2px 8px rgba(124,92,30,0.04);">
+                        <h3 class="mb-2" style="color:#7c5c1e;">${position}</h3>
+                        <p class="mb-0">We're looking for a talented ${position} to join our creative team.</p>
+                    </div>`;
+                    positionsContainer.appendChild(col);
+
+                    // Add to dropdown
+                    const option = document.createElement('option');
+                    option.value = position;
+                    option.textContent = position;
+                    positionDropdown.appendChild(option);
+                });
+
+                // File upload display
+                const fileInput = document.getElementById('cvUpload');
+                const fileNameDisplay = document.getElementById('fileName');
+                const fileLabel = document.querySelector('label[for="cvUpload"]');
+                fileLabel.addEventListener('click', function() {
+                    fileInput.click();
+                });
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                    } else {
+                        fileNameDisplay.textContent = 'No file chosen';
+                    }
+                });
+
+                // Show success message if redirected with ?success=true
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('success') === 'true') {
+                    const form = document.getElementById('applicationForm');
+                    const successMessage = document.getElementById('successMessage');
+                    form.style.display = 'none';
+                    successMessage.classList.remove('d-none');
+                    successMessage.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        </script>
+    </main>
+
+    <footer id="footer" class="footer accent-background">
+
+        <div class="container">
+            <div class="copyright text-center ">
+                <p>© <span>Copyright</span> <strong class="px-1 sitename">Prince Okoampah</strong> <span>All Rights Reserved</span></p>
+            </div>
+            <div class="social-links d-flex justify-content-center">
+                <a href="https://twitter.com/princeokoampah"><i class="bi bi-twitter-x"></i></a>
+                <a href="https://facebook.com/princeokoampah"><i class="bi bi-facebook"></i></a>
+                <a href="https://instagram.com/princeokoampah"><i class="bi bi-instagram"></i></a>
+                <a href="https://linkedin.com/in/princeokoampah"><i class="bi bi-linkedin"></i></a>
+            </div>
+            <div class="credits">
+                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+            </div>
+        </div>
+
+    </footer>
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Preloader -->
+    <div id="preloader"></div>
+
+    <!-- Vendor JS Files -->
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Removed validate.js as it's not needed for Google Sheets integration -->
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/typed.js/typed.umd.js"></script>
+    <script src="assets/vendor/waypoints/noframework.waypoints.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <script src="assets/vendor/isotope-layout/isotope.pkgd.min.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="assets/js/main.js"></script>
+
+</body>
+
+</html>
