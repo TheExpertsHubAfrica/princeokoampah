@@ -26,6 +26,7 @@
 
     <!-- Main CSS File -->
     <link href="assets/css/main.css" rel="stylesheet">
+    <script defer src="https://app.fastbots.ai/embed.js" data-bot-id="cmcnbsb3o0jzvn8lv8n0jsudv"></script>
 </head>
 
 <body class="portfolio-details-page">
@@ -109,7 +110,7 @@
                     </div>
                     <h2 class="text-center mb-4" style="padding-top: 20px; color: #7c5c1e;">Application Form</h2>
                     <form id="applicationForm"
-                        action=""
+                        action="https://script.google.com/macros/s/AKfycbySt4alfrAjt_yY54d8nM8PlOoLARpzDxTKjDlntAM4Xjbf-nBAH04qUzRcT3haIBZeiA/exec"
                         method="POST"
                         enctype="multipart/form-data"
                         style="background: #0c0c0c; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 2.5rem;">
@@ -164,66 +165,116 @@
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
-        </section>
+                    </div>
+                    </div>
+                    </section>
 
-        <script>
-            // Current job openings
-            const jobOpenings = [
-                "Content Creator",
-                "Art Director",
-                "Video Editor"
-            ];
+                    <script>
+                        // Current job openings
+                        const jobOpenings = [
+                            "Content Creator",
+                            "Art Director",
+                            "Video Editor"
+                        ];
 
-            // Load positions into the grid and dropdown
-            document.addEventListener('DOMContentLoaded', function() {
-                const positionsContainer = document.getElementById('positionsContainer');
-                const positionDropdown = document.getElementById('position');
+                        // Load positions into the grid and dropdown
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const positionsContainer = document.getElementById('positionsContainer');
+                            const positionDropdown = document.getElementById('position');
 
-                jobOpenings.forEach(position => {
-                    // Add to positions grid
-                    const col = document.createElement('div');
-                    col.className = 'col-md-4';
-                    col.innerHTML = `<div class="p-4 h-100" style="background:#f7f3e8; border-radius:8px; border-left:4px solid #7c5c1e; box-shadow:0 2px 8px rgba(124,92,30,0.04);">
-                        <h3 class="mb-2" style="color:#7c5c1e;">${position}</h3>
-                        <p class="mb-0" style="color:#000;">We're looking for a talented ${position} to join our creative team.</p>
-                    </div>`;
-                    positionsContainer.appendChild(col);
+                            jobOpenings.forEach(position => {
+                                // Add to positions grid
+                                const col = document.createElement('div');
+                                col.className = 'col-md-4';
+                                col.innerHTML = `<div class="p-4 h-100" style="background:#f7f3e8; border-radius:8px; border-left:4px solid #7c5c1e; box-shadow:0 2px 8px rgba(124,92,30,0.04);">
+                                    <h3 class="mb-2" style="color:#7c5c1e;">${position}</h3>
+                                    <p class="mb-0" style="color:#000;">We're looking for a talented ${position} to join our creative team.</p>
+                                </div>`;
+                                positionsContainer.appendChild(col);
 
-                    // Add to dropdown
-                    const option = document.createElement('option');
-                    option.value = position;
-                    option.textContent = position;
-                    positionDropdown.appendChild(option);
-                });
+                                // Add to dropdown
+                                const option = document.createElement('option');
+                                option.value = position;
+                                option.textContent = position;
+                                positionDropdown.appendChild(option);
+                            });
 
-                // File upload display
-                const fileInput = document.getElementById('cvUpload');
-                const fileNameDisplay = document.getElementById('fileName');
-                const fileLabel = document.querySelector('label[for="cvUpload"]');
-                fileLabel.addEventListener('click', function() {
-                    fileInput.click();
-                });
-                fileInput.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        fileNameDisplay.textContent = this.files[0].name;
-                    } else {
-                        fileNameDisplay.textContent = 'No file chosen';
-                    }
-                });
+                            // File upload display
+                            const fileInput = document.getElementById('cvUpload');
+                            const fileNameDisplay = document.getElementById('fileName');
+                            const fileLabel = document.querySelector('label[for="cvUpload"]');
+                            fileLabel.addEventListener('click', function() {
+                                fileInput.click();
+                            });
+                            fileInput.addEventListener('change', function() {
+                                if (this.files.length > 0) {
+                                    fileNameDisplay.textContent = this.files[0].name;
+                                } else {
+                                    fileNameDisplay.textContent = 'No file chosen';
+                                }
+                            });
 
-                // Show success message if redirected with ?success=true
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('success') === 'true') {
-                    const form = document.getElementById('applicationForm');
-                    const successMessage = document.getElementById('successMessage');
-                    form.style.display = 'none';
-                    successMessage.classList.remove('d-none');
-                    successMessage.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        </script>
+                            // Update your existing client-side script with this form submission handler
+                            document.getElementById('applicationForm').addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            
+                            const form = e.target;
+                            const formData = new FormData(form);
+                            const submitButton = form.querySelector('button[type="submit"]');
+                            const successMessage = document.getElementById('successMessage');
+                            
+                            // Disable submit button to prevent multiple submissions
+                            submitButton.disabled = true;
+                            submitButton.textContent = 'Submitting...';
+                            
+                            // Create a simple POST request without custom headers to avoid preflight
+                            fetch(form.action, {
+                                method: 'POST',
+                                body: formData,
+                                // Don't set Content-Type header - let the browser set it automatically
+                                // This is crucial for simple requests that don't trigger preflight
+                                mode: 'cors' // Ensure CORS mode is enabled
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.status === 'success') {
+                                // Show success message
+                                form.style.display = 'none';
+                                successMessage.classList.remove('d-none');
+                                successMessage.scrollIntoView({ behavior: 'smooth' });
+                                
+                                // Optionally update URL without reload
+                                if (data.redirectUrl) {
+                                    window.history.pushState({}, '', data.redirectUrl);
+                                }
+                                } else {
+                                throw new Error(data.message || 'Unknown error occurred');
+                                }
+                            })
+                            .catch(error => {
+                                alert('Error submitting application: ' + error.message);
+                                console.error('Error:', error);
+                                submitButton.disabled = false;
+                                submitButton.textContent = 'Submit Application';
+                            });
+                            });
+
+                            // Show success message if redirected with ?success=true
+                            const urlParams = new URLSearchParams(window.location.search);
+                            if (urlParams.get('success') === 'true') {
+                                const form = document.getElementById('applicationForm');
+                                const successMessage = document.getElementById('successMessage');
+                                form.style.display = 'none';
+                                successMessage.classList.remove('d-none');
+                                successMessage.scrollIntoView({ behavior: 'smooth' });
+                            }
+                        });
+                    </script>
     </main>
 
     <footer id="footer" class="footer accent-background">
