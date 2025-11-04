@@ -1289,7 +1289,7 @@
         <form id="newsletter-form" class="newsletter-form mx-auto d-flex flex-column flex-md-row align-items-center justify-content-center gap-3" style="max-width:500px;" action="https://script.google.com/macros/s/AKfycbxd733eRBbK0Y_D-TNM5Hay4Ht35zigiE1XF0t8yO4wefH8eDI9usglX_2_nCBKoA9cIQ/exec" method="POST">
           <input type="email" name="email" class="form-control rounded-pill px-4 py-3" placeholder="Enter your email address" required style="flex:1; min-width:180px; border:2px solid #d0bb8e; background:#232526; color:#fff; font-size:1.1rem;">
           <button type="submit" class="mbaButton" style="padding:12px 32px; font-size:1.1rem; border-radius:30px; background:#8d5524; color:#fff; border:none; font-weight:600; letter-spacing:1px; transition:background 0.2s;">
-            Subscribe
+            Join Email List
           </button>
         </form>
         <div id="newsletter-success" class="text-center mt-3" style="display:none; color:#d0bb8e; font-weight:600; font-size:1.1rem;">
@@ -1584,6 +1584,265 @@
 
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Email List Popup -->
+  <div id="email-popup" class="email-popup">
+    <button id="email-popup-close" class="email-popup-close" aria-label="Close">
+      <i class="bi bi-x"></i>
+    </button>
+    <div class="email-popup-icon">
+      <i class="bi bi-envelope-heart"></i>
+    </div>
+    <div class="email-popup-content">
+      <h3>Join the Inner Circle!</h3>
+      <p>Get exclusive insights & updates</p>
+    </div>
+  </div>
+
+  <style>
+    .email-popup {
+      position: fixed;
+      bottom: 80px;
+      right: 30px;
+      width: 220px;
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+      border: 2px solid #d0bb8e;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(208, 187, 142, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+      z-index: 998;
+      cursor: pointer;
+      transform: translateX(400px);
+      opacity: 0;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      animation: slideInBounce 0.8s ease-out 3s forwards;
+    }
+
+    .email-popup.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .email-popup.hide {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+
+    .email-popup:hover {
+      transform: translateX(0) scale(1.05);
+      box-shadow: 0 12px 48px rgba(208, 187, 142, 0.4), 0 4px 12px rgba(0, 0, 0, 0.3);
+      border-color: #8d5524;
+    }
+
+    .email-popup-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(208, 187, 142, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #d0bb8e;
+      font-size: 20px;
+      transition: all 0.3s ease;
+      z-index: 1;
+    }
+
+    .email-popup-close:hover {
+      background: #8d5524;
+      color: #fff;
+      transform: rotate(90deg);
+    }
+
+    .email-popup-icon {
+      text-align: center;
+      margin-bottom: 10px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .email-popup-icon i {
+      font-size: 36px;
+      color: #d0bb8e;
+      filter: drop-shadow(0 2px 8px rgba(208, 187, 142, 0.4));
+    }
+
+    .email-popup-content h3 {
+      color: #d0bb8e;
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .email-popup-content p {
+      color: #fff;
+      font-size: 12px;
+      text-align: center;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    @keyframes slideInBounce {
+      0% {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      60% {
+        transform: translateX(-20px);
+        opacity: 1;
+      }
+      80% {
+        transform: translateX(10px);
+      }
+      100% {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .email-popup {
+        width: 200px;
+        right: 15px;
+        bottom: 80px;
+        padding: 14px;
+      }
+
+      .email-popup-icon i {
+        font-size: 32px;
+      }
+
+      .email-popup-content h3 {
+        font-size: 15px;
+      }
+
+      .email-popup-content p {
+        font-size: 11px;
+      }
+    }
+
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+    }
+  </style>
+
+  <script>
+    (function() {
+      const popup = document.getElementById('email-popup');
+      const closeBtn = document.getElementById('email-popup-close');
+      const emailSection = document.getElementById('newsletter');
+      
+      // Check if popup was closed in this session
+      const popupClosed = sessionStorage.getItem('emailPopupClosed');
+      
+      // Show popup after animation delay (handled by CSS animation)
+      if (!popupClosed) {
+        setTimeout(() => {
+          popup.classList.add('show');
+        }, 3000);
+      }
+
+      // Close button handler with better event handling
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          popup.classList.remove('show');
+          popup.classList.add('hide');
+          sessionStorage.setItem('emailPopupClosed', 'true');
+          return false;
+        });
+      }
+
+      // Click popup to scroll to email section
+      popup.addEventListener('click', function(e) {
+        // Check if clicking on close button or its icon
+        if (e.target.closest('#email-popup-close')) {
+          return;
+        }
+        
+        // Smooth scroll to newsletter section
+        if (emailSection) {
+          emailSection.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+          
+          // Add a highlight effect to the email input
+          setTimeout(() => {
+            const emailInput = emailSection.querySelector('input[type="email"]');
+            if (emailInput) {
+              emailInput.focus();
+              emailInput.style.animation = 'inputHighlight 1s ease-out';
+              setTimeout(() => {
+                emailInput.style.animation = '';
+              }, 1000);
+            }
+          }, 800);
+          
+          // Hide popup after click and mark as closed
+          popup.classList.remove('show');
+          popup.classList.add('hide');
+          sessionStorage.setItem('emailPopupClosed', 'true');
+        }
+      });
+
+      // Show popup again when scrolling back up (if not permanently closed)
+      let lastScroll = 0;
+      window.addEventListener('scroll', function() {
+        if (!sessionStorage.getItem('emailPopupClosed')) {
+          const currentScroll = window.pageYOffset;
+          
+          // Show when scrolling up and past 500px
+          if (currentScroll < lastScroll && currentScroll > 500) {
+            if (!popup.classList.contains('show')) {
+              popup.classList.remove('hide');
+              popup.classList.add('show');
+            }
+          }
+          // Hide when scrolling down
+          else if (currentScroll > lastScroll && popup.classList.contains('show')) {
+            popup.classList.remove('show');
+            popup.classList.add('hide');
+          }
+          
+          lastScroll = currentScroll;
+        }
+      });
+
+      // Add input highlight animation
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes inputHighlight {
+          0%, 100% {
+            box-shadow: 0 0 0 2px rgba(208, 187, 142, 0);
+          }
+          50% {
+            box-shadow: 0 0 0 8px rgba(208, 187, 142, 0.4);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    })();
+  </script>
 
   <!-- Preloader -->
   <div id="preloader"></div>
