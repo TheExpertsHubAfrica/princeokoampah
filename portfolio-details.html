@@ -250,18 +250,20 @@
       cursor: pointer;
       transform: translateX(400px);
       opacity: 0;
-      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
       animation: slideInBounce 0.8s ease-out 3s forwards;
     }
 
     .email-popup.show {
       transform: translateX(0);
       opacity: 1;
+      animation: none;
     }
 
     .email-popup.hide {
-      transform: translateX(400px);
-      opacity: 0;
+      transform: translateX(400px) !important;
+      opacity: 0 !important;
+      animation: none !important;
     }
 
     .email-popup:hover {
@@ -397,17 +399,19 @@
           e.preventDefault();
           e.stopPropagation();
           e.stopImmediatePropagation();
+          popup.style.animation = 'none';
           popup.classList.remove('show');
           popup.classList.add('hide');
           sessionStorage.setItem('emailPopupClosed', 'true');
           return false;
-        });
+        }, { capture: true });
       }
 
       // Click popup to navigate to email section
       popup.addEventListener('click', function(e) {
         // Check if clicking on close button or its icon
         if (e.target.closest('#email-popup-close')) {
+          e.stopPropagation();
           return;
         }
         
