@@ -104,13 +104,81 @@
         <section id="application" class="section" style="background: #111111;">
             <div class="container" data-aos="fade-up">
                 <div class="mx-auto" style="max-width: 800px;">
-                    <div id="successMessage" class="alert alert-success text-center d-none" style="border-radius:0;background:#d0bb8e;border:none;color:#222;">
-                        <h3>Thank you for your application!</h3>
-                        <p>We've received your application and will review it shortly. You'll receive a confirmation email soon.</p>
+                    <!-- Success Message -->
+                    <div id="successMessage" class="alert alert-success text-center d-none" style="
+                        border-radius: 12px;
+                        background: linear-gradient(135deg, #d0bb8e 0%, #e6d3a3 100%);
+                        border: 2px solid #8d5524;
+                        color: #1a1a1a;
+                        padding: 2.5rem 2rem;
+                        margin: 2rem 0 3rem 0;
+                        box-shadow: 0 8px 24px rgba(124, 92, 30, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15);
+                        animation: slideDown 0.5s ease-out;
+                    ">
+                        <div style="
+                            font-size: 64px;
+                            margin-bottom: 1.25rem;
+                            color: #8d5524;
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        ">✓</div>
+                        <h3 style="
+                            margin-bottom: 1rem;
+                            font-size: 1.75rem;
+                            font-weight: 700;
+                            color: #1a1a1a;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        ">Application Submitted Successfully!</h3>
+                        <p style="
+                            margin-bottom: 0;
+                            font-size: 1.05rem;
+                            line-height: 1.6;
+                            color: #2a2a2a;
+                            max-width: 600px;
+                            margin-left: auto;
+                            margin-right: auto;
+                        ">We've received your application and will review it carefully. You'll receive a confirmation email shortly with next steps.</p>
                     </div>
+                    
+                    <!-- Error Message -->
+                    <div id="errorMessage" class="alert alert-danger text-center d-none" style="
+                        border-radius: 12px;
+                        background: linear-gradient(135deg, #8d2424 0%, #a83232 100%);
+                        border: 2px solid #d0bb8e;
+                        color: #fff;
+                        padding: 2.5rem 2rem;
+                        margin: 2rem 0 3rem 0;
+                        box-shadow: 0 8px 24px rgba(141, 36, 36, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+                        animation: slideDown 0.5s ease-out;
+                    ">
+                        <div style="
+                            font-size: 64px;
+                            margin-bottom: 1.25rem;
+                            color: #d0bb8e;
+                            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                        ">⚠</div>
+                        <h3 style="
+                            margin-bottom: 1rem;
+                            font-size: 1.75rem;
+                            font-weight: 700;
+                            color: #fff;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        ">Submission Error</h3>
+                        <p id="errorMessageText" style="
+                            margin-bottom: 0;
+                            font-size: 1.05rem;
+                            line-height: 1.6;
+                            color: #f5f5f5;
+                            max-width: 600px;
+                            margin-left: auto;
+                            margin-right: auto;
+                        "></p>
+                    </div>
+                    
                     <h2 class="text-center mb-4" style="padding-top: 20px; color: #7c5c1e;">Application Form</h2>
                     <form id="applicationForm"
-                        action="https://script.google.com/macros/s/AKfycbySt4alfrAjt_yY54d8nM8PlOoLARpzDxTKjDlntAM4Xjbf-nBAH04qUzRcT3haIBZeiA/exec"
+                        action="https://script.google.com/macros/s/AKfycbz1ED339wpcHKYmre8K7Hzva2fHmKpOgN_xi278Cmfh3RdmwzQDCyBFWaQkEnr0Wo-T_Q/exec"
                         method="POST"
                         enctype="multipart/form-data"
                         style="background: #0c0c0c; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); padding: 2.5rem;">
@@ -214,65 +282,107 @@
                                 }
                             });
 
-                            // Update your existing client-side script with this form submission handler
-                            document.getElementById('applicationForm').addEventListener('submit', function(e) {
-                            e.preventDefault();
-                            
-                            const form = e.target;
-                            const formData = new FormData(form);
-                            const submitButton = form.querySelector('button[type="submit"]');
-                            const successMessage = document.getElementById('successMessage');
-                            
-                            // Disable submit button to prevent multiple submissions
-                            submitButton.disabled = true;
-                            submitButton.textContent = 'Submitting...';
-                            
-                            // Create a simple POST request without custom headers to avoid preflight
-                            fetch(form.action, {
-                                method: 'POST',
-                                body: formData,
-                                // Don't set Content-Type header - let the browser set it automatically
-                                // This is crucial for simple requests that don't trigger preflight
-                                mode: 'cors' // Ensure CORS mode is enabled
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                if (data.status === 'success') {
-                                // Show success message
-                                form.style.display = 'none';
-                                successMessage.classList.remove('d-none');
-                                successMessage.scrollIntoView({ behavior: 'smooth' });
-                                
-                                // Optionally update URL without reload
-                                if (data.redirectUrl) {
-                                    window.history.pushState({}, '', data.redirectUrl);
-                                }
-                                } else {
-                                throw new Error(data.message || 'Unknown error occurred');
-                                }
-                            })
-                            .catch(error => {
-                                alert('Error submitting application: ' + error.message);
-                                console.error('Error:', error);
-                                submitButton.disabled = false;
-                                submitButton.textContent = 'Submit Application';
-                            });
-                            });
+                            // Create hidden iframe for form submission
+                            const iframe = document.createElement('iframe');
+                            iframe.name = 'hidden_iframe';
+                            iframe.id = 'hidden_iframe';
+                            iframe.style.display = 'none';
+                            document.body.appendChild(iframe);
 
-                            // Show success message if redirected with ?success=true
-                            const urlParams = new URLSearchParams(window.location.search);
-                            if (urlParams.get('success') === 'true') {
-                                const form = document.getElementById('applicationForm');
+                            // Form submission handler with user-friendly error messages
+                            document.getElementById('applicationForm').addEventListener('submit', function(e) {
+                                e.preventDefault();
+                                
+                                const form = e.target;
+                                const submitButton = form.querySelector('button[type="submit"]');
                                 const successMessage = document.getElementById('successMessage');
-                                form.style.display = 'none';
-                                successMessage.classList.remove('d-none');
-                                successMessage.scrollIntoView({ behavior: 'smooth' });
-                            }
+                                const errorMessage = document.getElementById('errorMessage');
+                                const errorMessageText = document.getElementById('errorMessageText');
+                                
+                                // Hide any previous messages
+                                successMessage.classList.add('d-none');
+                                errorMessage.classList.add('d-none');
+                                
+                                // Validate file upload
+                                const cvFile = document.getElementById('cvUpload').files[0];
+                                if (!cvFile) {
+                                    errorMessageText.textContent = 'Please upload your CV before submitting.';
+                                    errorMessage.classList.remove('d-none');
+                                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    return;
+                                }
+                                
+                                // Check file size (5MB max)
+                                if (cvFile.size > 5 * 1024 * 1024) {
+                                    errorMessageText.textContent = 'Your CV file is too large. Please upload a file smaller than 5MB.';
+                                    errorMessage.classList.remove('d-none');
+                                    errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    return;
+                                }
+                                
+                                // Disable submit button and show loading state
+                                submitButton.disabled = true;
+                                const originalText = submitButton.textContent;
+                                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Submitting...';
+                                
+                                // Set form target to hidden iframe
+                                form.target = 'hidden_iframe';
+                                
+                                // Handle iframe load event
+                                iframe.onload = function() {
+                                    setTimeout(function() {
+                                        try {
+                                            // Try to read iframe content
+                                            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                                            const responseText = iframeDoc.body.textContent || iframeDoc.body.innerText;
+                                            console.log('Response text:', responseText);
+                                            
+                                            let data;
+                                            try {
+                                                data = JSON.parse(responseText);
+                                                console.log('Parsed data:', data);
+                                            } catch (e) {
+                                                console.error('Failed to parse JSON:', e);
+                                                // Assume success if no error message
+                                                data = { status: 'success', message: 'Application submitted successfully' };
+                                            }
+                                            
+                                            if (data.status === 'success') {
+                                                // Show success message
+                                                form.style.display = 'none';
+                                                successMessage.classList.remove('d-none');
+                                                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                
+                                                // Reset form
+                                                form.reset();
+                                                document.getElementById('fileName').textContent = 'No file chosen';
+                                            } else {
+                                                // Show error message
+                                                errorMessageText.textContent = data.message || 'We encountered an issue processing your application. Please try again.';
+                                                errorMessage.classList.remove('d-none');
+                                                errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                
+                                                // Re-enable submit button
+                                                submitButton.disabled = false;
+                                                submitButton.innerHTML = originalText;
+                                            }
+                                        } catch (error) {
+                                            console.error('Error reading iframe:', error);
+                                            // If we can't read iframe due to CORS, show error for now
+                                            errorMessageText.textContent = 'Your application may not have been submitted successfully. Please contact us directly at bookings@princeokoampah.com to confirm, or try again.';
+                                            errorMessage.classList.remove('d-none');
+                                            errorMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            
+                                            // Re-enable submit button
+                                            submitButton.disabled = false;
+                                            submitButton.innerHTML = originalText;
+                                        }
+                                    }, 500);
+                                };
+                                
+                                // Submit the form
+                                form.submit();
+                            });
                         });
                     </script>
     </main>
@@ -315,6 +425,40 @@
     </div>
 
     <style>
+        /* Loading Spinner */
+        .spinner-border {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            vertical-align: text-bottom;
+            border: 0.15em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border 0.75s linear infinite;
+        }
+        
+        .spinner-border-sm {
+            width: 0.875rem;
+            height: 0.875rem;
+            border-width: 0.12em;
+        }
+        
+        @keyframes spinner-border {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Slide down animation for alerts */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .email-popup {
             position: fixed;
             bottom: 100px;
