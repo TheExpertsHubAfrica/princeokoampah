@@ -279,57 +279,89 @@
       }
       </style>
       <script>
-      // Vanilla JS infinite slider that waits for all images to pass before looping
+      // Vanilla JS infinite slider that continues regardless of any touch or click events
       (function() {
         const slider = document.getElementById('about-slider');
         const slideImgs = slider.querySelectorAll('.about-slide-img');
         const slideCount = slideImgs.length;
         const slideGap = parseFloat(getComputedStyle(slider).gap) || 24; // px
+        
+        let animId = null;
+        let isAnimating = false;
+        
         // Responsive width
         function getSlideWidth() {
           return slideImgs[0].offsetWidth + slideGap;
         }
+        
         // Duplicate all slides once for seamless loop
         function duplicateSlides() {
           if (slider.children.length === slideCount * 2) return;
           for (let i = 0; i < slideCount; i++) {
-        slider.appendChild(slideImgs[i].cloneNode(true));
+            slider.appendChild(slideImgs[i].cloneNode(true));
           }
         }
+        
         function startSlider() {
+          // Prevent multiple instances
+          if (isAnimating && animId) {
+            cancelAnimationFrame(animId);
+          }
+          
           duplicateSlides();
           let slideW = getSlideWidth();
-          let totalSlides = slider.children.length;
-          let totalWidth = slideW * totalSlides;
-          let visibleSlides = Math.floor(slider.parentElement.offsetWidth / slideW);
           let loopSlides = slideCount; // Only original slides
           let distance = slideW * loopSlides;
           let duration = 18; // seconds, adjust for speed
           let start = null;
-          let animId;
+          isAnimating = true;
+          
           function animate(ts) {
-        if (!start) start = ts;
-        let elapsed = (ts - start) / 1000;
-        let progress = elapsed / duration;
-        let translateX = -distance * progress;
-        slider.style.transform = `translateX(${translateX}px)`;
-        if (progress < 1) {
-          animId = requestAnimationFrame(animate);
-        } else {
-          // Reset and loop
-          slider.style.transform = `translateX(0)`;
-          start = null;
-          animId = requestAnimationFrame(animate);
-        }
+            if (!start) start = ts;
+            let elapsed = (ts - start) / 1000;
+            let progress = elapsed / duration;
+            let translateX = -distance * progress;
+            slider.style.transform = `translateX(${translateX}px)`;
+            
+            if (progress < 1) {
+              animId = requestAnimationFrame(animate);
+            } else {
+              // Reset and loop seamlessly
+              slider.style.transform = `translateX(0)`;
+              start = null;
+              animId = requestAnimationFrame(animate);
+            }
           }
-          // Reset on resize
-          window.addEventListener('resize', () => {
-        cancelAnimationFrame(animId);
-        slider.style.transform = 'translateX(0)';
-        setTimeout(startSlider, 100);
-          }, { once: true });
+          
           animId = requestAnimationFrame(animate);
         }
+        
+        // Handle resize without stopping animation
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(() => {
+            // Recalculate on resize but keep animation going
+            if (isAnimating) {
+              startSlider();
+            }
+          }, 250);
+        });
+        
+        // Prevent any touch/click events from stopping the slider
+        slider.addEventListener('mousedown', (e) => {
+          // Allow default behavior but ensure animation continues
+          if (!isAnimating) startSlider();
+        }, { passive: true });
+        
+        slider.addEventListener('touchstart', (e) => {
+          // Allow default behavior but ensure animation continues
+          if (!isAnimating) startSlider();
+        }, { passive: true });
+        
+        // Disable pointer events that might interfere (optional)
+        slider.style.pointerEvents = 'none';
+        
         // Wait for images to load
         if (document.readyState === 'complete') {
           startSlider();
