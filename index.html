@@ -531,11 +531,25 @@
         <p>Stay tuned for the latest updates, events and announcements.</p>
       </div>
       <div class="container position-relative" style="max-width:900px;">
-        <button class="event-arrow left" aria-label="Previous Event" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:2;background:#232526;border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;box-shadow:0 2px 8px rgba(35,37,38,0.12);opacity:0.85;transition:background 0.2s;">
+        <button class="event-arrow left" aria-label="Previous Event" style="position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:2;background:#232526;border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;box-shadow:0 2px 8px rgba(35,37,38,0.12);opacity:0.85;transition:background 0.2s,opacity 0.2s;cursor:pointer;">
           <i class="bi bi-chevron-left"></i>
         </button>
-        <div id="event-slider-wrapper" style="overflow-x:hidden;">
-          <div id="event-slider" class="d-flex align-items-stretch" style="transition:transform 0.5s cubic-bezier(.4,2,.6,1);gap:2rem;">
+        <div id="event-slider-wrapper" style="overflow:hidden;width:100%;padding:0 60px;">
+          <div id="event-slider" class="d-flex align-items-stretch" style="gap:2rem;">
+            <div class="event-slide flex-shrink-0" style="min-width:320px;max-width:340px;width:100%;">
+              <div class="post-item position-relative overflow-hidden rounded shadow" style="background: linear-gradient(135deg, #414345 60%, #8d5524 100%); min-height: 320px; display: flex; align-items: center; justify-content: center;">
+                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center" style="color: #fff; padding: 16px;">
+                  <img src="assets/img/Events/dominatus.jpg" alt="" style="max-width:100%;height:auto;display:block;border-radius:0.5rem;">
+                </div>
+              </div>
+            </div>
+            <div class="event-slide flex-shrink-0" style="min-width:320px;max-width:340px;width:100%;">
+              <div class="post-item position-relative overflow-hidden rounded shadow" style="background: linear-gradient(135deg, #414345 60%, #8d5524 100%); min-height: 320px; display: flex; align-items: center; justify-content: center;">
+                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center" style="color: #fff; padding: 16px;">
+                  <img src="assets/img/Events/kantankatv.jpg" alt="" style="max-width:100%;height:auto;display:block;border-radius:0.5rem;">
+                </div>
+              </div>
+            </div>
             <div class="event-slide flex-shrink-0" style="min-width:320px;max-width:340px;width:100%;">
               <div class="post-item position-relative overflow-hidden rounded shadow" style="background: linear-gradient(135deg, #232526 60%, #8d5524 100%); min-height: 320px; display: flex; align-items: center; justify-content: center;">
                 <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center" style="color: #fff; padding: 16px;">
@@ -599,28 +613,34 @@
                 </div>
               </div>
             </div>
-            <div class="event-slide flex-shrink-0" style="min-width:320px;max-width:340px;width:100%;">
-              <div class="post-item position-relative overflow-hidden rounded shadow" style="background: linear-gradient(135deg, #414345 60%, #8d5524 100%); min-height: 320px; display: flex; align-items: center; justify-content: center;">
-                <div class="w-100 h-100 d-flex flex-column align-items-center justify-content-center text-center" style="color: #fff; padding: 16px;">
-                  <img src="assets/img/Events/campus your.jpg" alt="" style="max-width:100%;height:auto;display:block;border-radius:0.5rem;">
-                </div>
-              </div>
-            </div>
           </div>
         </div>
-        <button class="event-arrow right" aria-label="Next Event" style="position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:2;background:#232526;border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;box-shadow:0 2px 8px rgba(35,37,38,0.12);opacity:0.85;transition:background 0.2s;">
+        <button class="event-arrow right" aria-label="Next Event" style="position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:2;background:#232526;border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.7rem;box-shadow:0 2px 8px rgba(35,37,38,0.12);opacity:0.85;transition:background 0.2s,opacity 0.2s;cursor:pointer;">
           <i class="bi bi-chevron-right"></i>
         </button>
       </div>
       <style>
         #event-slider-wrapper {
+          position: relative;
           width: 100%;
-          margin: 0 auto;
-          padding: 0 60px;
-          box-sizing: border-box;
+          overflow: hidden;
+          margin-bottom: 1.5rem;
         }
         #event-slider {
+          display: flex;
+          align-items: stretch;
+          gap: 2rem;
           will-change: transform;
+          cursor: grab;
+          transition: transform 0.5s cubic-bezier(.4,2,.6,1);
+        }
+        #event-slider.dragging {
+          cursor: grabbing;
+          transition: none;
+        }
+        .event-slide {
+          flex-shrink: 0;
+          user-select: none;
         }
         .event-arrow:hover {
           background: #8d5524;
@@ -628,6 +648,9 @@
           opacity: 1;
         }
         @media (max-width: 767.98px) {
+          #event-slider {
+            gap: 0.75rem;
+          }
           #event-slider-wrapper {
             padding: 0 20px;
           }
@@ -641,51 +664,219 @@
             font-size: 1.2rem !important;
           }
         }
+        .post-item {
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
         .post-item:hover {
           transform: translateY(-10px) scale(1.03);
           box-shadow: 0 8px 16px 0 rgba(141,85,36,0.25), 0 1.5px 8px 0 rgba(35,37,38,0.10);
         }
       </style>
       <script>
+        // Hybrid slider with auto-scroll and manual control
         (function() {
           const slider = document.getElementById('event-slider');
-          const slides = slider.querySelectorAll('.event-slide');
+          const slideItems = slider.querySelectorAll('.event-slide');
           const leftBtn = document.querySelector('.event-arrow.left');
           const rightBtn = document.querySelector('.event-arrow.right');
-          let current = 0;
-          const total = slides.length;
+          const slideCount = slideItems.length;
+          const slideGap = parseFloat(getComputedStyle(slider).gap) || 32;
+          
+          let animId = null;
+          let isAutoScrolling = false;
+          let isPaused = false;
+          let currentIndex = 0;
+          let pauseTimeout = null;
+          
+          // Responsive width
           function getSlideWidth() {
-            return slides[0].offsetWidth + (parseFloat(getComputedStyle(slider).gap) || 32);
+            return slideItems[0].offsetWidth + slideGap;
           }
-          function updateSlider() {
-            const slideW = getSlideWidth();
-            slider.style.transform = `translateX(${-current * slideW}px)`;
-          }
-          leftBtn.addEventListener('click', function() {
-            current = (current - 1 + total) % total;
-            updateSlider();
-          });
-          rightBtn.addEventListener('click', function() {
-            current = (current + 1) % total;
-            updateSlider();
-          });
-          window.addEventListener('resize', updateSlider);
-          // Optional: swipe support for mobile
-          let startX = null;
-          slider.addEventListener('touchstart', e => {
-            startX = e.touches[0].clientX;
-          });
-          slider.addEventListener('touchend', e => {
-            if (startX === null) return;
-            let dx = e.changedTouches[0].clientX - startX;
-            if (Math.abs(dx) > 40) {
-              if (dx < 0) rightBtn.click();
-              else leftBtn.click();
+          
+          // Duplicate all slides for seamless loop
+          function duplicateSlides() {
+            if (slider.children.length === slideCount * 2) return;
+            for (let i = 0; i < slideCount; i++) {
+              slider.appendChild(slideItems[i].cloneNode(true));
             }
-            startX = null;
+          }
+          
+          // Manual navigation
+          function goToSlide(index, smooth = true) {
+            const slideW = getSlideWidth();
+            slider.style.transition = smooth ? 'transform 0.5s cubic-bezier(.4,2,.6,1)' : 'none';
+            slider.style.transform = `translateX(${-index * slideW}px)`;
+            currentIndex = index;
+          }
+          
+          // Auto-scroll animation
+          function startAutoScroll() {
+            if (isAutoScrolling && animId) {
+              cancelAnimationFrame(animId);
+            }
+            
+            duplicateSlides();
+            const slideW = getSlideWidth();
+            const loopSlides = slideCount;
+            const distance = slideW * loopSlides;
+            const duration = 20; // seconds
+            let start = null;
+            let startOffset = currentIndex * slideW;
+            isAutoScrolling = true;
+            
+            function animate(ts) {
+              if (isPaused) {
+                animId = requestAnimationFrame(animate);
+                return;
+              }
+              
+              if (!start) start = ts;
+              const elapsed = (ts - start) / 1000;
+              const progress = elapsed / duration;
+              const translateX = -(startOffset + (distance * progress));
+              
+              slider.style.transition = 'none';
+              slider.style.transform = `translateX(${translateX}px)`;
+              
+              // Calculate current index for seamless loop
+              currentIndex = Math.floor((startOffset + (distance * progress)) / slideW);
+              
+              if (progress < 1) {
+                animId = requestAnimationFrame(animate);
+              } else {
+                // Reset to start for seamless loop
+                currentIndex = 0;
+                startOffset = 0;
+                slider.style.transform = `translateX(0)`;
+                start = null;
+                animId = requestAnimationFrame(animate);
+              }
+            }
+            
+            animId = requestAnimationFrame(animate);
+          }
+          
+          function pauseAutoScroll(resumeDelay = 5000) {
+            isPaused = true;
+            if (pauseTimeout) clearTimeout(pauseTimeout);
+            
+            // Resume after delay
+            pauseTimeout = setTimeout(() => {
+              isPaused = false;
+            }, resumeDelay);
+          }
+          
+          // Button controls
+          leftBtn.addEventListener('click', function() {
+            pauseAutoScroll(7000);
+            currentIndex = Math.max(0, currentIndex - 1);
+            if (currentIndex < 0) currentIndex = slideCount - 1;
+            goToSlide(currentIndex);
           });
-          // Init
-          setTimeout(updateSlider, 100);
+          
+          rightBtn.addEventListener('click', function() {
+            pauseAutoScroll(7000);
+            currentIndex = (currentIndex + 1) % (slideCount * 2);
+            goToSlide(currentIndex);
+            
+            // Loop back seamlessly
+            if (currentIndex >= slideCount) {
+              setTimeout(() => {
+                goToSlide(0, false);
+                currentIndex = 0;
+              }, 500);
+            }
+          });
+          
+          // Drag/swipe functionality
+          let isDragging = false;
+          let startX = 0;
+          let currentTranslate = 0;
+          let prevTranslate = 0;
+          
+          function getTranslateX() {
+            const style = window.getComputedStyle(slider);
+            const matrix = new DOMMatrix(style.transform);
+            return matrix.m41;
+          }
+          
+          function handleDragStart(e) {
+            isDragging = true;
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+            prevTranslate = getTranslateX();
+            slider.classList.add('dragging');
+            pauseAutoScroll(7000);
+          }
+          
+          function handleDragMove(e) {
+            if (!isDragging) return;
+            e.preventDefault();
+            
+            const currentX = e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+            const diff = currentX - startX;
+            currentTranslate = prevTranslate + diff;
+            
+            slider.style.transition = 'none';
+            slider.style.transform = `translateX(${currentTranslate}px)`;
+          }
+          
+          function handleDragEnd() {
+            if (!isDragging) return;
+            isDragging = false;
+            slider.classList.remove('dragging');
+            
+            const movedBy = currentTranslate - prevTranslate;
+            const slideW = getSlideWidth();
+            
+            // Snap to nearest slide
+            if (Math.abs(movedBy) > slideW / 4) {
+              if (movedBy > 0) {
+                currentIndex = Math.max(0, currentIndex - 1);
+              } else {
+                currentIndex = Math.min(slideCount * 2 - 1, currentIndex + 1);
+              }
+            }
+            
+            goToSlide(currentIndex);
+            
+            // Loop back seamlessly
+            if (currentIndex >= slideCount) {
+              setTimeout(() => {
+                goToSlide(0, false);
+                currentIndex = 0;
+              }, 500);
+            }
+          }
+          
+          // Mouse events
+          slider.addEventListener('mousedown', handleDragStart);
+          slider.addEventListener('mousemove', handleDragMove);
+          slider.addEventListener('mouseup', handleDragEnd);
+          slider.addEventListener('mouseleave', handleDragEnd);
+          
+          // Touch events
+          slider.addEventListener('touchstart', handleDragStart, { passive: false });
+          slider.addEventListener('touchmove', handleDragMove, { passive: false });
+          slider.addEventListener('touchend', handleDragEnd);
+          
+          // Hover to pause
+          slider.addEventListener('mouseenter', () => pauseAutoScroll(3000));
+          
+          // Handle resize
+          let resizeTimer;
+          window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+              goToSlide(currentIndex, false);
+            }, 250);
+          });
+          
+          // Initialize
+          if (document.readyState === 'complete') {
+            startAutoScroll();
+          } else {
+            window.addEventListener('load', startAutoScroll);
+          }
         })();
       </script>
     </section>
