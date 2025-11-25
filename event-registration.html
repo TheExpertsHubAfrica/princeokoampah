@@ -586,7 +586,7 @@
       console.log('updateSubmitButtonText called - Button found:', !!submitBtn, 'requiresPayment:', requiresPayment, 'amount:', paymentAmount);
       if (submitBtn) {
         if (requiresPayment && paymentAmount > 0) {
-          submitBtn.textContent = `Pay GHS ${paymentAmount.toLocaleString()} & Register`;
+          submitBtn.textContent = 'Pay & Register';
           console.log('Button text updated to:', submitBtn.textContent);
         } else {
           submitBtn.textContent = 'Register Now';
@@ -673,7 +673,7 @@
         onClose: function() {
           // User closed payment modal
           submitBtn.disabled = false;
-          submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+          submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
           loadingSpinner.style.display = 'none';
           
           alertMessage.className = 'alert alert-error';
@@ -714,7 +714,7 @@
         
         loadingSpinner.style.display = 'none';
         submitBtn.disabled = false;
-        submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+        submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
         
         alertMessage.className = 'alert alert-error';
         alertMessage.innerHTML = '<strong>Error!</strong> Payment verification failed. Please contact support with reference: ' + reference;
@@ -764,7 +764,7 @@
             // Reset button after 3 seconds
             setTimeout(() => {
               submitBtn.disabled = false;
-              submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+              submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
             }, 3000);
           } else {
             throw new Error('Registration failed. Please try again.');
@@ -797,7 +797,7 @@
           // Reset button
           setTimeout(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+            submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
           }, 3000);
         };
         
@@ -814,7 +814,7 @@
         
         // Re-enable submit button
         submitBtn.disabled = false;
-        submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+        submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
         
         // Scroll to message
         alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
