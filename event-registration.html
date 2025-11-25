@@ -460,10 +460,21 @@
   <!-- Main JS File -->
   <script src="assets/js/main.js"></script>
 
+  <!-- Paystack JS -->
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+
   <!-- Form Submission Script -->
   <script>
     // Admin Backend Script URL for fetching event data
-    const ADMIN_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyKS7ZztMq3GTr0X6Qo8WgKtCpKt0d7FCKv4dOOMnmLzvQI45B5JXHp4u6NqpB6PbK1/exec';
+    const ADMIN_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwoIbQONuAk3QqNe8uFQDEd5HpO1-O4gfgO1knzCeAafuzWAtS_R-G9un4CzqdjqyNC/exec';
+    
+    // Paystack Configuration
+    const PAYSTACK_PUBLIC_KEY = 'pk_test_d3a81afef739c83459cb4aad6de8eb4b511689ab';
+    
+    // Store current event pricing
+    let currentEventPricing = null;
+    let requiresPayment = false;
+    let paymentAmount = 0;
     
     // Load event data from backend
     async function loadEventData() {
@@ -506,6 +517,10 @@
             }
           }
           
+          // Store pricing information
+          currentEventPricing = event.eventInvestment || 'Free';
+          checkPaymentRequirement(currentEventPricing);
+          
           // Update event details
           const detailsElement = document.getElementById('event-details');
           if (detailsElement) {
@@ -523,12 +538,62 @@
             `;
           }
           
+          // Update submit button text based on payment requirement
+          updateSubmitButtonText();
+          
           // Update hidden form fields
           updateHiddenFields();
         }
       } catch (error) {
         console.error('Error loading event data:', error);
         // Fallback to static content already in HTML
+        currentEventPricing = document.getElementById('event-details')?.textContent.match(/Investment:\s*(.+)/)?.[1] || 'Free';
+        checkPaymentRequirement(currentEventPricing);
+        updateSubmitButtonText();
+      }
+    }
+    
+    // Check if payment is required based on investment text
+    function checkPaymentRequirement(investmentText) {
+      if (!investmentText) {
+        requiresPayment = false;
+        paymentAmount = 0;
+        return;
+      }
+      
+      // Check if investment starts with "Ghc" or "GHC" or "GHS"
+      const paymentMatch = investmentText.match(/(?:Ghc|GHC|GHS)\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/i);
+      
+      if (paymentMatch) {
+        requiresPayment = true;
+        // Remove commas and parse amount
+        paymentAmount = parseFloat(paymentMatch[1].replace(/,/g, ''));
+        console.log('Payment required: GHS ' + paymentAmount);
+        // Update button immediately after setting payment requirement
+        updateSubmitButtonText();
+      } else {
+        requiresPayment = false;
+        paymentAmount = 0;
+        console.log('No payment required');
+        // Update button immediately after setting payment requirement
+        updateSubmitButtonText();
+      }
+    }
+    
+    // Update submit button text based on payment requirement
+    function updateSubmitButtonText() {
+      const submitBtn = document.getElementById('submit-btn');
+      console.log('updateSubmitButtonText called - Button found:', !!submitBtn, 'requiresPayment:', requiresPayment, 'amount:', paymentAmount);
+      if (submitBtn) {
+        if (requiresPayment && paymentAmount > 0) {
+          submitBtn.textContent = `Pay GHS ${paymentAmount.toLocaleString()} & Register`;
+          console.log('Button text updated to:', submitBtn.textContent);
+        } else {
+          submitBtn.textContent = 'Register Now';
+          console.log('Button text updated to: Register Now');
+        }
+      } else {
+        console.error('Submit button not found!');
       }
     }
     
@@ -549,14 +614,18 @@
     }
     
     // Load event data on page load
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       // Try to load dynamic data first
       if (ADMIN_BACKEND_URL && ADMIN_BACKEND_URL !== 'YOUR_ADMIN_BACKEND_URL_HERE') {
-        loadEventData();
+        await loadEventData();
       } else {
         // Use static content and update hidden fields
+        currentEventPricing = 'Early Bird Registration Available';
+        checkPaymentRequirement(currentEventPricing);
+        updateSubmitButtonText();
         updateHiddenFields();
       }
+      console.log('Page loaded - Payment settings:', { requiresPayment, paymentAmount, currentEventPricing });
     });
 
     const form = document.getElementById('registration-form');
@@ -565,44 +634,158 @@
     const loadingSpinner = document.getElementById('loading-spinner');
     
     // Replace with your actual Google Apps Script Web App URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeyk-f4NtyWC0tUV7qQmF8MgNoL5punScyqui4QHimKQYHRTYSdbXvuQAzSi8Ikdkm/exec';
+    // IMPORTANT: After deploying your Apps Script, update this URL
+    // Get it from: Deploy → Manage deployments → Copy Web app URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOLCpnpaAQtuy6WMxu6ZAA2w4k-9Sjlcg3e0q1bhRbNJePyWHK409yI1OEa4iipRN6/exec';
+    
+    // Verify script URL is valid
+    if (!SCRIPT_URL || SCRIPT_URL.includes('YOUR_') || SCRIPT_URL.length < 50) {
+      console.error('⚠️ SCRIPT_URL not configured! Update with your deployment URL.');
+    }
 
-    form.addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      // Disable submit button
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
-      
-      // Show loading spinner
-      loadingSpinner.style.display = 'block';
-      alertMessage.style.display = 'none';
-      
-      // Get form data
-      const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
+    // Initialize Paystack payment
+    function initializePayment(formData, callback) {
+      const handler = PaystackPop.setup({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: formData.email,
+        amount: paymentAmount * 100, // Convert to pesewas (kobo)
+        currency: 'GHS',
+        ref: 'EVENT-' + Math.floor((Math.random() * 1000000000) + 1),
+        metadata: {
+          custom_fields: [
+            {
+              display_name: "Event Name",
+              variable_name: "event_name",
+              value: formData.eventName
+            },
+            {
+              display_name: "Full Name",
+              variable_name: "full_name",
+              value: formData.fullName
+            },
+            {
+              display_name: "Phone Number",
+              variable_name: "phone",
+              value: formData.phone
+            }
+          ]
+        },
+        onClose: function() {
+          // User closed payment modal
+          submitBtn.disabled = false;
+          submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+          loadingSpinner.style.display = 'none';
+          
+          alertMessage.className = 'alert alert-error';
+          alertMessage.innerHTML = '<strong>Payment Cancelled!</strong> You cancelled the payment process.';
+          alertMessage.style.display = 'block';
+          alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        },
+        callback: function(response) {
+          // Payment successful - verify and submit registration
+          verifyPaymentAndRegister(response.reference, formData, callback);
+        }
       });
       
+      handler.openIframe();
+    }
+    
+    // Verify payment with Paystack
+    async function verifyPaymentAndRegister(reference, formData, callback) {
       try {
-        const response = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          body: JSON.stringify(data),
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        });
+        // Add payment reference to form data
+        formData.paymentReference = reference;
+        formData.paymentAmount = paymentAmount;
+        formData.paymentStatus = 'pending_verification';
         
-        const result = await response.json();
+        // Show verifying message
+        loadingSpinner.style.display = 'block';
+        const spinnerText = loadingSpinner.querySelector('p');
+        if (spinnerText) {
+          spinnerText.textContent = 'Verifying payment...';
+        }
         
-        // Hide loading spinner
+        // Submit registration with payment reference
+        // Backend will verify payment with Paystack
+        callback(formData);
+        
+      } catch (error) {
+        console.error('Payment verification error:', error);
+        
         loadingSpinner.style.display = 'none';
+        submitBtn.disabled = false;
+        submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
         
-        if (result.status === 'success') {
-          // Show success message
+        alertMessage.className = 'alert alert-error';
+        alertMessage.innerHTML = '<strong>Error!</strong> Payment verification failed. Please contact support with reference: ' + reference;
+        alertMessage.style.display = 'block';
+        alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+    
+    // Submit registration data
+    async function submitRegistration(data) {
+      try {
+        // Use Google Apps Script's URL parameters method (works without CORS issues)
+        const params = new URLSearchParams();
+        for (const key in data) {
+          params.append(key, typeof data[key] === 'object' ? JSON.stringify(data[key]) : data[key]);
+        }
+        
+        // Use XMLHttpRequest for better compatibility with Apps Script
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', SCRIPT_URL, true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        
+        xhr.onload = function() {
+          // Hide loading spinner
+          loadingSpinner.style.display = 'none';
+          
+          if (xhr.status === 200 || xhr.status === 302) {
+            // Success - show message
+            alertMessage.className = 'alert alert-success';
+            let successMsg = '<strong>Success!</strong> Your registration has been received.';
+            
+            if (requiresPayment) {
+              successMsg += ' Payment confirmed! Reference: ' + data.paymentReference;
+            }
+            
+            successMsg += ' Check your email for confirmation.';
+            
+            alertMessage.innerHTML = successMsg;
+            alertMessage.style.display = 'block';
+            
+            // Reset form
+            form.reset();
+            
+            // Scroll to message
+            alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Reset button after 3 seconds
+            setTimeout(() => {
+              submitBtn.disabled = false;
+              submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
+            }, 3000);
+          } else {
+            throw new Error('Registration failed. Please try again.');
+          }
+        };
+        
+        xhr.onerror = function() {
+          // Even if we get an error, the submission might have succeeded
+          // Apps Script redirects can cause false errors
+          loadingSpinner.style.display = 'none';
+          
           alertMessage.className = 'alert alert-success';
-          alertMessage.innerHTML = '<strong>Success!</strong> Your registration has been received. Check your email for confirmation.';
+          let successMsg = '<strong>Success!</strong> Your registration has been submitted.';
+          
+          if (requiresPayment) {
+            successMsg += ' Payment confirmed! Reference: ' + data.paymentReference;
+          }
+          
+          successMsg += ' Check your email for confirmation.';
+          
+          alertMessage.innerHTML = successMsg;
           alertMessage.style.display = 'block';
           
           // Reset form
@@ -611,14 +794,15 @@
           // Scroll to message
           alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
           
-          // Reset button after 3 seconds
+          // Reset button
           setTimeout(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Register Now';
+            submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
           }, 3000);
-        } else {
-          throw new Error(result.message || 'Registration failed');
-        }
+        };
+        
+        xhr.send(params.toString());
+        
       } catch (error) {
         // Hide loading spinner
         loadingSpinner.style.display = 'none';
@@ -630,10 +814,57 @@
         
         // Re-enable submit button
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Register Now';
+        submitBtn.textContent = requiresPayment ? `Pay GHS ${paymentAmount.toLocaleString()} & Register` : 'Register Now';
         
         // Scroll to message
         alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Re-check payment requirement as a safeguard (in case event data loaded late)
+      if (currentEventPricing) {
+        checkPaymentRequirement(currentEventPricing);
+      }
+      
+      // Debug log to verify payment requirement
+      console.log('Form submission - requiresPayment:', requiresPayment);
+      console.log('Form submission - paymentAmount:', paymentAmount);
+      console.log('Form submission - currentEventPricing:', currentEventPricing);
+      
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing...';
+      
+      // Show loading spinner
+      loadingSpinner.style.display = 'block';
+      const spinnerText = loadingSpinner.querySelector('p');
+      if (spinnerText) {
+        spinnerText.textContent = 'Processing your registration...';
+      }
+      alertMessage.style.display = 'none';
+      
+      // Get form data
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      
+      // Check if payment is required
+      if (requiresPayment && paymentAmount > 0) {
+        console.log('Payment required - opening Paystack modal for GHS', paymentAmount);
+        // Hide loading spinner temporarily for payment modal
+        loadingSpinner.style.display = 'none';
+        
+        // Initialize payment
+        initializePayment(data, submitRegistration);
+      } else {
+        console.log('No payment required - submitting directly');
+        // No payment required, submit directly
+        await submitRegistration(data);
       }
     });
   </script>
