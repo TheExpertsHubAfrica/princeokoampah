@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Event Registration - Prince Okoampah</title>
+  <meta name="description" content="Register for upcoming events with Prince Okoampah">
+  <meta name="keywords" content="event registration, Prince Okoampah, speaking event">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    .event-hero {
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+      padding: 60px 0 60px;
+      min-height: 500px;
+    }
+    
+    .event-flyer-container {
+      display: flex;
+      align-items: center;
+      height: 100%;
+      position: sticky;
+      top: 100px;
+    }
+    
+    .event-flyer {
+      max-width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      box-shadow: 0 8px 32px rgba(208, 187, 142, 0.3);
+      transition: transform 0.3s ease;
+    }
+    
+    .event-flyer:hover {
+      transform: scale(1.02);
+    }
+    
+    .event-description {
+      background: #232526;
+      color: #fff;
+      padding: 3rem 2rem;
+      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 500px;
+    }
+    
+    .event-description h2 {
+      color: #d0bb8e;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 2rem;
+    }
+    
+    .event-description p {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+    
+    .registration-form {
+      background: #fff;
+      padding: 3rem 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .registration-form h3 {
+      color: #232526;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+      color: #232526;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .form-group label .required {
+      color: #8d5524;
+    }
+    
+    .form-control {
+      border: 2px solid #ddd;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: #d0bb8e;
+      box-shadow: 0 0 0 0.2rem rgba(208, 187, 142, 0.25);
+    }
+    
+    .submit-btn {
+      background: #8d5524;
+      color: #fff;
+      border: none;
+      padding: 1rem 3rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      width: 100%;
+      text-transform: uppercase;
+    }
+    
+    .submit-btn:hover {
+      background: #d0bb8e;
+      color: #232526;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(141, 85, 36, 0.3);
+    }
+    
+    .submit-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .alert {
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+    
+    .alert-success {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    
+    .alert-error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    
+    .spinner-border {
+      width: 3rem;
+      height: 3rem;
+      border: 0.25em solid #d0bb8e;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spinner-border 0.75s linear infinite;
+    }
+    
+    @keyframes spinner-border {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 991.98px) {
+      .event-flyer-container {
+        position: static;
+        margin-bottom: 2rem;
+      }
+      
+      .event-description {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 767.98px) {
+      .event-hero {
+        padding: 100px 0 40px;
+        min-height: auto;
+      }
+      
+      .event-description {
+        padding: 2rem 1.5rem;
+      }
+      
+      .event-description h2 {
+        font-size: 1.5rem;
+      }
+      
+      .registration-form {
+        padding: 2rem 1.5rem;
+      }
+      
+      .submit-btn {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+      }
+    }
+    
+    .page-headline {
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+      padding: 40px 0 40px;
+      text-align: center;
+    }
+    
+    .page-headline h1 {
+      color: #d0bb8e;
+      font-size: 3rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .page-headline p {
+      color: #fff;
+      font-size: 1.3rem;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    @media (max-width: 767.98px) {
+      .page-headline {
+        padding: 100px 0 30px;
+      }
+      
+      .page-headline h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+      }
+      
+      .page-headline p {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+
+      <a href="index.html" class="logo d-flex align-items-center">
+        <div class="sitename"><img src="assets/img/sharpSign.jpg" alt=""></div>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="index.html#hero">HOME</a></li>
+          <li><a href="index.html#about">ABOUT</a></li>
+          <li><a href="index.html#services">PROFILE</a></li>
+          <li><a href="index.html#portfolio">THE JOURNEY</a></li>
+          <li><a href="hiring.html">VACANCIES</a></li>
+          <li><a href="index.html#contact">CONTACT</a></li>
+          <li>
+            <a href="booking.html" class="mbaButton" style="display:inline-block;padding:10px 25px;border:2px solid #e6d3a3;background:transparent;color:#e6d3a3;font-family:'Poppins',sans-serif;font-size:15px;font-weight:500;letter-spacing:1px;text-align:center;text-decoration:none;transition:background 0.2s,color 0.2s,border 0.2s;">
+              BOOK PRINCE
+            </a>
+          </li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- Page Headline Section -->
+  <section class="page-headline" data-aos="fade-down">
+    <div class="container">
+      <h1>Event Registration</h1>
+      <p>Secure your spot at this exclusive event with Prince Okoampah</p>
+    </div>
+  </section>
+
+  <main class="main">
+
+    <!-- Event Hero Section -->
+    <section class="event-hero">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-5 col-md-6" data-aos="fade-right">
+            <div class="event-flyer-container">
+              <img src="assets/img/Events/IMG_0211.JPG" alt="Speak Like A Pro 4.0" class="event-flyer">
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-6" data-aos="fade-left">
+            <div class="event-description">
+              <h2 id="event-title">Speak Like A Pro 4.0</h2>
+              <p>
+                Join Prince Okoampah for an transformative public speaking masterclass designed to elevate your communication skills to professional levels. This intensive workshop will equip you with proven techniques, confidence-building strategies, and practical tools to command any stage.
+              </p>
+              <p>
+                Whether you're a business executive, entrepreneur, student, or aspiring speaker, Speak Like A Pro 3.0 will help you:
+              </p>
+              <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                <li>Master the art of storytelling and audience engagement</li>
+                <li>Overcome stage fright and build unshakeable confidence</li>
+                <li>Develop your unique speaking style and personal brand</li>
+                <li>Learn professional presentation techniques used by TEDx speakers</li>
+                <li>Network with like-minded individuals and industry leaders</li>
+              </ul>
+              <p id="event-details">
+                <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">29th November, 2025</span><br>
+                <strong style="color: #d0bb8e;">Time:</strong> 4PM (Ghana) • 9AM (Canada) • 7PM (Kenya)<br>
+                <strong style="color: #d0bb8e;">Format:</strong> In-Person + Virtual<br>
+                <strong style="color: #d0bb8e;">Venue:</strong> Details in Caption (Check event flyer)<br>
+                <strong style="color: #d0bb8e;">Investment:</strong> Early Bird Registration Available
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Registration Form Section -->
+    <section class="container" style="margin: 3rem auto 5rem;">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="registration-form" data-aos="fade-up">
+            <h3>Register for this Event</h3>
+            
+            <div id="alert-message" class="alert"></div>
+            <div id="loading-spinner" class="loading-spinner">
+              <div class="spinner-border"></div>
+              <p style="margin-top: 1rem; color: #232526;">Submitting your registration...</p>
+            </div>
+            
+            <form id="registration-form" method="POST">
+              <input type="hidden" name="eventName" id="eventNameField" value="">
+              <input type="hidden" name="eventDate" id="eventDateField" value="">
+              
+              <div class="form-group">
+                <label for="fullName">Full Name <span class="required">*</span></label>
+                <input type="text" class="form-control" id="fullName" name="fullName" required placeholder="Enter your full name">
+              </div>
+
+              <div class="form-group">
+                <label for="email">Email Address <span class="required">*</span></label>
+                <input type="email" class="form-control" id="email" name="email" required placeholder="your.email@example.com">
+              </div>
+
+              <div class="form-group">
+                <label for="phone">Phone Number <span class="required">*</span></label>
+                <input type="tel" class="form-control" id="phone" name="phone" required placeholder="+233 XX XXX XXXX">
+              </div>
+
+              <div class="form-group">
+                <label for="organization">Organization/Company</label>
+                <input type="text" class="form-control" id="organization" name="organization" placeholder="Your organization or company name">
+              </div>
+
+              <div class="form-group">
+                <label for="attendeeType">I am a <span class="required">*</span></label>
+                <select class="form-control" id="attendeeType" name="attendeeType" required>
+                  <option value="">Select category</option>
+                  <option value="Student">Student</option>
+                  <option value="Professional">Professional</option>
+                  <option value="Entrepreneur">Entrepreneur</option>
+                  <option value="Corporate Executive">Corporate Executive</option>
+                  <option value="Public Speaker">Public Speaker</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="hearAboutUs">How did you hear about this event? <span class="required">*</span></label>
+                <select class="form-control" id="hearAboutUs" name="hearAboutUs" required>
+                  <option value="">Select option</option>
+                  <option value="Social Media">Social Media</option>
+                  <option value="Friend/Colleague">Friend/Colleague</option>
+                  <option value="Website">Website</option>
+                  <option value="Email">Email Newsletter</option>
+                  <option value="Previous Event">Previous Event</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="message">Additional Comments or Questions</label>
+                <textarea class="form-control" id="message" name="message" rows="4" placeholder="Any special requirements or questions? (Optional)"></textarea>
+              </div>
+
+              <div class="form-group">
+                <button type="submit" class="submit-btn" id="submit-btn">
+                  Register Now
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="footer" class="footer">
+
+    <div class="container">
+      <div class="copyright text-center ">
+        <p>&copy; <span>Copyright</span> <strong class="px-1 sitename">Prince Okoampah</strong> <span>All Rights Reserved</span></p>
+      </div>
+      <div class="social-links d-flex justify-content-center">
+        <a href="https://www.tiktok.com/@prince_okoampah?_t=ZM-90zSHP5p1bv&_r=1"><i class="bi bi-tiktok"></i></a>
+        <a href="https://www.instagram.com/prince_okoampah/"><i class="bi bi-instagram"></i></a>
+        <a href="https://www.linkedin.com/in/prince-okoampah-2b3ab01ba/"><i class="bi bi-linkedin"></i></a>
+        <a href="https://web.facebook.com/prince.okoampah"><i class="bi bi-facebook"></i></a>
+        <a href=""><i class="bi bi-twitter-x"></i></a>
+      </div>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+  <!-- Form Submission Script -->
+  <script>
+    // Populate hidden form fields from page content
+    document.addEventListener('DOMContentLoaded', function() {
+      const eventTitle = document.getElementById('event-title');
+      const eventDate = document.getElementById('event-date');
+      const eventNameField = document.getElementById('eventNameField');
+      const eventDateField = document.getElementById('eventDateField');
+      
+      if (eventTitle && eventNameField) {
+        eventNameField.value = eventTitle.textContent.trim();
+      }
+      
+      if (eventDate && eventDateField) {
+        eventDateField.value = eventDate.textContent.trim();
+      }
+    });
+
+    const form = document.getElementById('registration-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const alertMessage = document.getElementById('alert-message');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    
+    // Replace with your actual Google Apps Script Web App URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeyk-f4NtyWC0tUV7qQmF8MgNoL5punScyqui4QHimKQYHRTYSdbXvuQAzSi8Ikdkm/exec';
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      // Disable submit button
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      
+      // Show loading spinner
+      loadingSpinner.style.display = 'block';
+      alertMessage.style.display = 'none';
+      
+      // Get form data
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+      
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        });
+        
+        const result = await response.json();
+        
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        
+        if (result.status === 'success') {
+          // Show success message
+          alertMessage.className = 'alert alert-success';
+          alertMessage.innerHTML = '<strong>Success!</strong> Your registration has been received. Check your email for confirmation.';
+          alertMessage.style.display = 'block';
+          
+          // Reset form
+          form.reset();
+          
+          // Scroll to message
+          alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          
+          // Reset button after 3 seconds
+          setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Register Now';
+          }, 3000);
+        } else {
+          throw new Error(result.message || 'Registration failed');
+        }
+      } catch (error) {
+        // Hide loading spinner
+        loadingSpinner.style.display = 'none';
+        
+        // Show error message
+        alertMessage.className = 'alert alert-error';
+        alertMessage.innerHTML = '<strong>Error!</strong> ' + (error.message || 'Something went wrong. Please try again.');
+        alertMessage.style.display = 'block';
+        
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Register Now';
+        
+        // Scroll to message
+        alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  </script>
+
+</body>
+
+</html>
