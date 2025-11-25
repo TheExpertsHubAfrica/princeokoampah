@@ -462,8 +462,78 @@
 
   <!-- Form Submission Script -->
   <script>
+    // Admin Backend Script URL for fetching event data
+    const ADMIN_BACKEND_URL = 'https://script.google.com/macros/s/AKfycbyKS7ZztMq3GTr0X6Qo8WgKtCpKt0d7FCKv4dOOMnmLzvQI45B5JXHp4u6NqpB6PbK1/exec';
+    
+    // Load event data from backend
+    async function loadEventData() {
+      try {
+        const response = await fetch(ADMIN_BACKEND_URL + '?action=getEventData');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          const event = result.data;
+          
+          // Update event title
+          const titleElement = document.getElementById('event-title');
+          if (titleElement && event.eventTitle) {
+            titleElement.textContent = event.eventTitle;
+          }
+          
+          // Update event flyer
+          const flyerElement = document.querySelector('.event-flyer');
+          if (flyerElement && event.eventFlyerUrl) {
+            flyerElement.src = event.eventFlyerUrl;
+            flyerElement.alt = event.eventTitle || 'Event Flyer';
+          }
+          
+          // Update event description
+          const descriptionContainer = document.querySelector('.event-description');
+          if (descriptionContainer && event.eventDescription) {
+            // Find the first paragraph after h2
+            const firstPara = descriptionContainer.querySelector('p:first-of-type');
+            if (firstPara) {
+              firstPara.textContent = event.eventDescription;
+            }
+          }
+          
+          // Update event benefits list
+          if (event.eventBenefits) {
+            const benefitsList = descriptionContainer.querySelector('ul');
+            if (benefitsList) {
+              const benefits = event.eventBenefits.split('\n').filter(b => b.trim());
+              benefitsList.innerHTML = benefits.map(benefit => `<li>${benefit.trim()}</li>`).join('');
+            }
+          }
+          
+          // Update event details
+          const detailsElement = document.getElementById('event-details');
+          if (detailsElement) {
+            const dateSpan = document.getElementById('event-date');
+            if (dateSpan && event.eventDate) {
+              dateSpan.textContent = event.eventDate;
+            }
+            
+            detailsElement.innerHTML = `
+              <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">${event.eventDate || 'TBA'}</span><br>
+              <strong style="color: #d0bb8e;">Time:</strong> ${event.eventTime || 'TBA'}<br>
+              <strong style="color: #d0bb8e;">Format:</strong> ${event.eventFormat || 'TBA'}<br>
+              <strong style="color: #d0bb8e;">Venue:</strong> ${event.eventVenue || 'Details in Caption (Check event flyer)'}<br>
+              <strong style="color: #d0bb8e;">Investment:</strong> ${event.eventInvestment || 'TBA'}
+            `;
+          }
+          
+          // Update hidden form fields
+          updateHiddenFields();
+        }
+      } catch (error) {
+        console.error('Error loading event data:', error);
+        // Fallback to static content already in HTML
+      }
+    }
+    
     // Populate hidden form fields from page content
-    document.addEventListener('DOMContentLoaded', function() {
+    function updateHiddenFields() {
       const eventTitle = document.getElementById('event-title');
       const eventDate = document.getElementById('event-date');
       const eventNameField = document.getElementById('eventNameField');
@@ -475,6 +545,17 @@
       
       if (eventDate && eventDateField) {
         eventDateField.value = eventDate.textContent.trim();
+      }
+    }
+    
+    // Load event data on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Try to load dynamic data first
+      if (ADMIN_BACKEND_URL && ADMIN_BACKEND_URL !== 'YOUR_ADMIN_BACKEND_URL_HERE') {
+        loadEventData();
+      } else {
+        // Use static content and update hidden fields
+        updateHiddenFields();
       }
     });
 
