@@ -177,6 +177,170 @@
       margin: 1rem 0;
     }
     
+    /* Event Loading Skeleton */
+    .event-skeleton {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    .skeleton-flyer {
+      width: 100%;
+      height: 500px;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 1rem;
+    }
+    
+    .skeleton-text {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 0.5rem;
+      height: 20px;
+      margin-bottom: 1rem;
+    }
+    
+    .skeleton-title {
+      height: 40px;
+      width: 70%;
+      margin-bottom: 1.5rem;
+    }
+    
+    .skeleton-line {
+      height: 16px;
+      margin-bottom: 0.75rem;
+    }
+    
+    .skeleton-line:nth-child(2) { width: 95%; }
+    .skeleton-line:nth-child(3) { width: 90%; }
+    .skeleton-line:nth-child(4) { width: 85%; }
+    .skeleton-line:nth-child(5) { width: 60%; }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    /* Success Section */
+    .success-section {
+      display: none;
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, #d0bb8e 0%, #8d5524 100%);
+      border-radius: 1rem;
+      color: #fff;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background: #fff;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      animation: scaleIn 0.5s ease-out 0.2s both;
+    }
+    
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+    
+    .success-icon i {
+      font-size: 3rem;
+      color: #8d5524;
+    }
+    
+    .success-section h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .success-section p {
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.95;
+    }
+    
+    .success-details {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      backdrop-filter: blur(10px);
+    }
+    
+    .success-details p {
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+    
+    .success-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    
+    .success-btn {
+      padding: 0.875rem 2rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s;
+      display: inline-block;
+      letter-spacing: 1px;
+    }
+    
+    .success-btn-primary {
+      background: #fff;
+      color: #8d5524;
+    }
+    
+    .success-btn-primary:hover {
+      background: #232526;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+    
+    .success-btn-secondary {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 2px solid #fff;
+    }
+    
+    .success-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    
     .spinner-border {
       width: 3rem;
       height: 3rem;
@@ -309,34 +473,44 @@
     <!-- Event Hero Section -->
     <section class="event-hero">
       <div class="container">
-        <div class="row align-items-center">
+        <!-- Loading Skeleton -->
+        <div id="event-loading" class="row align-items-center event-skeleton">
           <div class="col-lg-5 col-md-6" data-aos="fade-right">
             <div class="event-flyer-container">
-              <img src="assets/img/Events/IMG_0211.JPG" alt="Speak Like A Pro 4.0" class="event-flyer">
+              <div class="skeleton-flyer"></div>
             </div>
           </div>
           <div class="col-lg-7 col-md-6" data-aos="fade-left">
             <div class="event-description">
-              <h2 id="event-title">Speak Like A Pro 4.0</h2>
-              <p>
-                Join Prince Okoampah for an transformative public speaking masterclass designed to elevate your communication skills to professional levels. This intensive workshop will equip you with proven techniques, confidence-building strategies, and practical tools to command any stage.
-              </p>
-              <p>
-                Whether you're a business executive, entrepreneur, student, or aspiring speaker, Speak Like A Pro 4.0 will help you:
-              </p>
-              <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
-                <li>Master the art of storytelling and audience engagement</li>
-                <li>Overcome stage fright and build unshakeable confidence</li>
-                <li>Develop your unique speaking style and personal brand</li>
-                <li>Learn professional presentation techniques used by TEDx speakers</li>
-                <li>Network with like-minded individuals and industry leaders</li>
-              </ul>
+              <div class="skeleton-text skeleton-title"></div>
+              <div class="skeleton-text skeleton-line"></div>
+              <div class="skeleton-text skeleton-line"></div>
+              <div class="skeleton-text skeleton-line"></div>
+              <div class="skeleton-text skeleton-line"></div>
+              <div class="skeleton-text skeleton-line"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Actual Event Content -->
+        <div id="event-content" class="row align-items-center" style="display: none;">
+          <div class="col-lg-5 col-md-6" data-aos="fade-right">
+            <div class="event-flyer-container">
+              <img src="assets/img/Events/IMG_0211.JPG" alt="Event Flyer" class="event-flyer" id="event-flyer-img">
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-6" data-aos="fade-left">
+            <div class="event-description">
+              <h2 id="event-title">Loading...</h2>
+              <div id="event-description-content">
+                <p>Loading event details...</p>
+              </div>
               <p id="event-details">
-                <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">29th November, 2025</span><br>
-                <strong style="color: #d0bb8e;">Time:</strong> 4PM (Ghana) • 9AM (Canada) • 7PM (Kenya)<br>
-                <strong style="color: #d0bb8e;">Format:</strong> In-Person + Virtual<br>
-                <strong style="color: #d0bb8e;">Venue:</strong> Details in Caption (Check event flyer)<br>
-                <strong style="color: #d0bb8e;">Investment:</strong> Early Bird Registration Available
+                <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">-</span><br>
+                <strong style="color: #d0bb8e;">Time:</strong> <span id="event-time">-</span><br>
+                <strong style="color: #d0bb8e;">Format:</strong> <span id="event-format">-</span><br>
+                <strong style="color: #d0bb8e;">Venue:</strong> <span id="event-venue">-</span><br>
+                <strong style="color: #d0bb8e;">Investment:</strong> <span id="event-investment">-</span>
               </p>
             </div>
           </div>
@@ -348,7 +522,26 @@
     <section class="container" style="margin: 3rem auto 5rem;">
       <div class="row justify-content-center">
         <div class="col-lg-8">
-          <div class="registration-form" data-aos="fade-up">
+          <!-- Success Section (Hidden by default) -->
+          <div id="success-section" class="success-section">
+            <div class="success-icon">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h2>Registration Successful!</h2>
+            <p>Thank you for registering. We're excited to have you join us!</p>
+            <div class="success-details">
+              <p><strong>Confirmation emails have been sent to your inbox.</strong></p>
+              <p>Please check your email for event details and further instructions.</p>
+              <p>If you don't see the email, please check your spam folder.</p>
+            </div>
+            <div class="success-actions">
+              <a href="index.html" class="success-btn success-btn-primary">Back to Home</a>
+              <a href="index.html#contact" class="success-btn success-btn-secondary">Contact Us</a>
+            </div>
+          </div>
+          
+          <!-- Registration Form -->
+          <div id="registration-form-container" class="registration-form" data-aos="fade-up">
             <h3>Register for this Event</h3>
             
             <div id="alert-message" class="alert"></div>
@@ -492,28 +685,26 @@
           }
           
           // Update event flyer
-          const flyerElement = document.querySelector('.event-flyer');
-          if (flyerElement && event.eventFlyerUrl) {
-            flyerElement.src = event.eventFlyerUrl;
-            flyerElement.alt = event.eventTitle || 'Event Flyer';
+          const flyerImg = document.getElementById('event-flyer-img');
+          if (flyerImg && event.eventFlyerUrl) {
+            flyerImg.src = event.eventFlyerUrl;
+            flyerImg.alt = event.eventTitle || 'Event Flyer';
           }
           
-          // Update event description
-          const descriptionContainer = document.querySelector('.event-description');
-          if (descriptionContainer && event.eventDescription) {
-            // Find the first paragraph after h2
-            const firstPara = descriptionContainer.querySelector('p:first-of-type');
-            if (firstPara) {
-              firstPara.textContent = event.eventDescription;
-            }
-          }
-          
-          // Update event benefits list
-          if (event.eventBenefits) {
-            const benefitsList = descriptionContainer.querySelector('ul');
-            if (benefitsList) {
+          // Update event description content
+          const descriptionContent = document.getElementById('event-description-content');
+          if (descriptionContent && event.eventDescription) {
+            descriptionContent.innerHTML = `<p>${event.eventDescription}</p>`;
+            
+            // Add benefits if available
+            if (event.eventBenefits) {
               const benefits = event.eventBenefits.split('\n').filter(b => b.trim());
-              benefitsList.innerHTML = benefits.map(benefit => `<li>${benefit.trim()}</li>`).join('');
+              descriptionContent.innerHTML += `
+                <p>Key benefits:</p>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+                  ${benefits.map(benefit => `<li>${benefit.trim()}</li>`).join('')}
+                </ul>
+              `;
             }
           }
           
@@ -522,32 +713,38 @@
           checkPaymentRequirement(currentEventPricing);
           
           // Update event details
-          const detailsElement = document.getElementById('event-details');
-          if (detailsElement) {
-            const dateSpan = document.getElementById('event-date');
-            if (dateSpan && event.eventDate) {
-              dateSpan.textContent = event.eventDate;
-            }
-            
-            detailsElement.innerHTML = `
-              <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">${event.eventDate || 'TBA'}</span><br>
-              <strong style="color: #d0bb8e;">Time:</strong> ${event.eventTime || 'TBA'}<br>
-              <strong style="color: #d0bb8e;">Format:</strong> ${event.eventFormat || 'TBA'}<br>
-              <strong style="color: #d0bb8e;">Venue:</strong> ${event.eventVenue || 'Details in Caption (Check event flyer)'}<br>
-              <strong style="color: #d0bb8e;">Investment:</strong> ${event.eventInvestment || 'TBA'}
-            `;
-          }
+          const dateSpan = document.getElementById('event-date');
+          const timeSpan = document.getElementById('event-time');
+          const formatSpan = document.getElementById('event-format');
+          const venueSpan = document.getElementById('event-venue');
+          const investmentSpan = document.getElementById('event-investment');
+          
+          if (dateSpan && event.eventDate) dateSpan.textContent = event.eventDate;
+          if (timeSpan && event.eventTime) timeSpan.textContent = event.eventTime;
+          if (formatSpan && event.eventFormat) formatSpan.textContent = event.eventFormat;
+          if (venueSpan && event.eventVenue) venueSpan.textContent = event.eventVenue;
+          if (investmentSpan) investmentSpan.textContent = currentEventPricing;
+          
+          // Hide loading skeleton and show actual content
+          document.getElementById('event-loading').style.display = 'none';
+          document.getElementById('event-content').style.display = 'flex';
           
           // Update submit button text based on payment requirement
           updateSubmitButtonText();
           
           // Update hidden form fields
           updateHiddenFields();
+        } else {
+          throw new Error('No event data found');
         }
       } catch (error) {
         console.error('Error loading event data:', error);
-        // Fallback to static content already in HTML
-        currentEventPricing = document.getElementById('event-details')?.textContent.match(/Investment:\s*(.+)/)?.[1] || 'Free';
+        // Hide loading and show content anyway (fallback to static content)
+        document.getElementById('event-loading').style.display = 'none';
+        document.getElementById('event-content').style.display = 'flex';
+        
+        // Fallback: try to extract pricing from existing content
+        currentEventPricing = document.getElementById('event-investment')?.textContent || 'Free';
         checkPaymentRequirement(currentEventPricing);
         updateSubmitButtonText();
       }
@@ -742,30 +939,17 @@
           loadingSpinner.style.display = 'none';
           
           if (xhr.status === 200 || xhr.status === 302) {
-            // Success - show message
-            alertMessage.className = 'alert alert-success';
-            let successMsg = '<strong>Success!</strong> Your registration has been received.';
+            // Success - hide form and show success section
+            document.getElementById('registration-form-container').style.display = 'none';
+            const successSection = document.getElementById('success-section');
+            successSection.style.display = 'block';
             
-            if (requiresPayment) {
-              successMsg += ' Payment confirmed! Reference: ' + data.paymentReference;
-            }
+            // Scroll to success section
+            successSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
             
-            successMsg += ' Check your email for confirmation.';
-            
-            alertMessage.innerHTML = successMsg;
-            alertMessage.style.display = 'block';
-            
-            // Reset form
-            form.reset();
-            
-            // Scroll to message
-            alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Reset button after 3 seconds
-            setTimeout(() => {
-              submitBtn.disabled = false;
-              submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
-            }, 3000);
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
           } else {
             throw new Error('Registration failed. Please try again.');
           }
@@ -776,29 +960,17 @@
           // Apps Script redirects can cause false errors
           loadingSpinner.style.display = 'none';
           
-          alertMessage.className = 'alert alert-success';
-          let successMsg = '<strong>Success!</strong> Your registration has been submitted.';
+          // Hide form and show success section
+          document.getElementById('registration-form-container').style.display = 'none';
+          const successSection = document.getElementById('success-section');
+          successSection.style.display = 'block';
           
-          if (requiresPayment) {
-            successMsg += ' Payment confirmed! Reference: ' + data.paymentReference;
-          }
+          // Scroll to success section
+          successSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
           
-          successMsg += ' Check your email for confirmation.';
-          
-          alertMessage.innerHTML = successMsg;
-          alertMessage.style.display = 'block';
-          
-          // Reset form
-          form.reset();
-          
-          // Scroll to message
-          alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
-          // Reset button
-          setTimeout(() => {
-            submitBtn.disabled = false;
-            submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
-          }, 3000);
+          // Reset button state
+          submitBtn.disabled = false;
+          submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
         };
         
         xhr.send(params.toString());
