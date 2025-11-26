@@ -81,88 +81,96 @@
     }
     
     .registration-form {
-      background: #fff;
-      padding: 3rem 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      background-color: var(--surface-color);
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+    
+    @media (max-width: 575px) {
+      .registration-form {
+        padding: 20px;
+      }
     }
     
     .registration-form h3 {
-      color: #232526;
+      color: var(--heading-color);
       font-weight: 700;
-      margin-bottom: 2rem;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-    }
-    
-    .form-group {
       margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1.75rem;
     }
     
-    .form-group label {
-      color: #232526;
-      font-weight: 600;
+    .registration-form .php-email-form .row {
+      margin-top: 0;
+    }
+    
+    .registration-form .form-label {
+      color: var(--default-color);
+      font-weight: 500;
       margin-bottom: 0.5rem;
       display: block;
+      font-size: 14px;
     }
     
-    .form-group label .required {
-      color: #8d5524;
+    .registration-form .form-label .required {
+      color: #dc3545;
     }
     
-    .form-control {
-      border: 2px solid #ddd;
-      border-radius: 0.5rem;
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
+    .registration-form .form-control {
+      font-size: 14px;
+      padding: 10px 15px;
+      box-shadow: none;
+      border-radius: 0.375rem;
+      color: var(--default-color);
+      background-color: color-mix(in srgb, var(--background-color), transparent 50%);
+      border: 1px solid color-mix(in srgb, var(--default-color), transparent 80%);
       transition: border-color 0.3s;
     }
     
-    .form-control:focus {
-      border-color: #d0bb8e;
-      box-shadow: 0 0 0 0.2rem rgba(208, 187, 142, 0.25);
+    .registration-form .form-control:focus {
+      border-color: var(--accent-color);
+      outline: none;
+      box-shadow: none;
+    }
+    
+    .registration-form .form-control::placeholder {
+      color: color-mix(in srgb, var(--default-color), transparent 70%);
     }
     
     .submit-btn {
-      background: #8d5524;
-      color: #fff;
-      border: none;
-      padding: 1rem 3rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      border-radius: 2rem;
+      color: var(--contrast-color);
+      background: var(--accent-color);
+      border: 0;
+      padding: 10px 30px;
+      transition: 0.4s;
+      border-radius: 50px;
       cursor: pointer;
-      transition: all 0.3s;
       width: 100%;
-      text-transform: uppercase;
+      font-size: 15px;
+      font-weight: 500;
     }
     
     .submit-btn:hover {
-      background: #d0bb8e;
-      color: #232526;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(141, 85, 36, 0.3);
+      background: color-mix(in srgb, var(--accent-color), transparent 20%);
     }
     
     .submit-btn:disabled {
       background: #ccc;
       cursor: not-allowed;
-      transform: none;
+      opacity: 0.6;
     }
     
     .alert {
-      border-radius: 0.5rem;
-      padding: 1rem;
+      border-radius: 0;
+      padding: 15px;
       margin-bottom: 1.5rem;
       display: none;
+      border: none;
     }
     
     .alert-success {
-      background: #d4edda;
-      border: 1px solid #c3e6cb;
-      color: #155724;
+      background: #d0bb8e;
+      color: #222;
     }
     
     .alert-error {
@@ -175,6 +183,22 @@
       display: none;
       text-align: center;
       margin: 1rem 0;
+      padding: 15px;
+      background: #d0bb8e;
+      border-radius: 0;
+    }
+    
+    .loading-spinner .spinner-border {
+      width: 2rem;
+      height: 2rem;
+      border-width: 0.25em;
+      color: #222;
+    }
+    
+    .loading-spinner p {
+      margin-top: 1rem;
+      color: #222;
+      font-weight: 500;
     }
     
     /* Event Loading Skeleton */
@@ -546,69 +570,73 @@
             
             <div id="alert-message" class="alert"></div>
             <div id="loading-spinner" class="loading-spinner">
-              <div class="spinner-border"></div>
-              <p style="margin-top: 1rem; color: #232526;">Submitting your registration...</p>
+              <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+              <p>Processing your registration...</p>
             </div>
             
-            <form id="registration-form" method="POST">
+            <form id="registration-form" class="php-email-form" method="POST">
               <input type="hidden" name="eventName" id="eventNameField" value="">
               <input type="hidden" name="eventDate" id="eventDateField" value="">
               
-              <div class="form-group">
-                <label for="fullName">Full Name <span class="required">*</span></label>
-                <input type="text" class="form-control" id="fullName" name="fullName" required placeholder="Enter your full name">
-              </div>
+              <div class="row gy-3">
+                <div class="col-md-6">
+                  <label for="fullName" class="form-label">Full Name <span class="required">*</span></label>
+                  <input type="text" class="form-control" id="fullName" name="fullName" required placeholder="Enter your full name">
+                </div>
 
-              <div class="form-group">
-                <label for="email">Email Address <span class="required">*</span></label>
-                <input type="email" class="form-control" id="email" name="email" required placeholder="your.email@example.com">
-              </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label">Email Address <span class="required">*</span></label>
+                  <input type="email" class="form-control" id="email" name="email" required placeholder="your.email@example.com">
+                </div>
 
-              <div class="form-group">
-                <label for="phone">Phone Number <span class="required">*</span></label>
-                <input type="tel" class="form-control" id="phone" name="phone" required placeholder="+233 XX XXX XXXX">
-              </div>
+                <div class="col-md-6">
+                  <label for="phone" class="form-label">Phone Number <span class="required">*</span></label>
+                  <input type="tel" class="form-control" id="phone" name="phone" required placeholder="+233 XX XXX XXXX">
+                </div>
 
-              <div class="form-group">
-                <label for="organization">Organization/Company</label>
-                <input type="text" class="form-control" id="organization" name="organization" placeholder="Your organization or company name">
-              </div>
+                <div class="col-md-6">
+                  <label for="organization" class="form-label">Organization/Company</label>
+                  <input type="text" class="form-control" id="organization" name="organization" placeholder="Your organization or company name">
+                </div>
 
-              <div class="form-group">
-                <label for="attendeeType">I am a <span class="required">*</span></label>
-                <select class="form-control" id="attendeeType" name="attendeeType" required>
-                  <option value="">Select category</option>
-                  <option value="Student">Student</option>
-                  <option value="Professional">Professional</option>
-                  <option value="Entrepreneur">Entrepreneur</option>
-                  <option value="Corporate Executive">Corporate Executive</option>
-                  <option value="Public Speaker">Public Speaker</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+                <div class="col-md-6">
+                  <label for="attendeeType" class="form-label">I am a <span class="required">*</span></label>
+                  <select class="form-control" id="attendeeType" name="attendeeType" required>
+                    <option value="">Select category</option>
+                    <option value="Student">Student</option>
+                    <option value="Professional">Professional</option>
+                    <option value="Entrepreneur">Entrepreneur</option>
+                    <option value="Corporate Executive">Corporate Executive</option>
+                    <option value="Public Speaker">Public Speaker</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label for="hearAboutUs">How did you hear about this event? <span class="required">*</span></label>
-                <select class="form-control" id="hearAboutUs" name="hearAboutUs" required>
-                  <option value="">Select option</option>
-                  <option value="Social Media">Social Media</option>
-                  <option value="Friend/Colleague">Friend/Colleague</option>
-                  <option value="Website">Website</option>
-                  <option value="Email">Email Newsletter</option>
-                  <option value="Previous Event">Previous Event</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
+                <div class="col-md-6">
+                  <label for="hearAboutUs" class="form-label">How did you hear about this event? <span class="required">*</span></label>
+                  <select class="form-control" id="hearAboutUs" name="hearAboutUs" required>
+                    <option value="">Select option</option>
+                    <option value="Social Media">Social Media</option>
+                    <option value="Friend/Colleague">Friend/Colleague</option>
+                    <option value="Website">Website</option>
+                    <option value="Email">Email Newsletter</option>
+                    <option value="Previous Event">Previous Event</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label for="message">Additional Comments or Questions</label>
-                <textarea class="form-control" id="message" name="message" rows="4" placeholder="Any special requirements or questions? (Optional)"></textarea>
-              </div>
+                <div class="col-12">
+                  <label for="message" class="form-label">Additional Comments or Questions</label>
+                  <textarea class="form-control" id="message" name="message" rows="4" placeholder="Any special requirements or questions? (Optional)"></textarea>
+                </div>
 
-              <div class="form-group">
-                <button type="submit" class="submit-btn" id="submit-btn">
-                  Register Now
-                </button>
+                <div class="col-12 text-center">
+                  <button type="submit" class="submit-btn" id="submit-btn">
+                    Register Now
+                  </button>
+                </div>
               </div>
             </form>
           </div>
