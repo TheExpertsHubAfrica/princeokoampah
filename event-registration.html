@@ -910,18 +910,26 @@
           currentEventPricing = event.eventInvestment || 'Free';
           checkPaymentRequirement(currentEventPricing);
           
-          // Update event details
+          // Update event details with fallbacks
           const dateSpan = document.getElementById('event-date');
           const timeSpan = document.getElementById('event-time');
           const formatSpan = document.getElementById('event-format');
           const venueSpan = document.getElementById('event-venue');
           const investmentSpan = document.getElementById('event-investment');
           
-          if (dateSpan && event.eventDate) dateSpan.textContent = event.eventDate;
-          if (timeSpan && event.eventTime) timeSpan.textContent = event.eventTime;
-          if (formatSpan && event.eventFormat) formatSpan.textContent = event.eventFormat;
-          if (venueSpan && event.eventVenue) venueSpan.textContent = event.eventVenue;
-          if (investmentSpan) investmentSpan.textContent = currentEventPricing;
+          if (dateSpan) dateSpan.textContent = event.eventDate || 'TBA';
+          if (timeSpan) timeSpan.textContent = event.eventTime || 'TBA';
+          if (formatSpan) formatSpan.textContent = event.eventFormat || 'TBA';
+          if (venueSpan) venueSpan.textContent = event.eventVenue || 'Check event flyer';
+          if (investmentSpan) investmentSpan.textContent = currentEventPricing || 'TBA';
+          
+          console.log('Event details updated:', {
+            date: event.eventDate,
+            time: event.eventTime,
+            format: event.eventFormat,
+            venue: event.eventVenue,
+            investment: currentEventPricing
+          });
           
           // Hide loading skeleton and show actual content
           document.getElementById('event-loading').style.display = 'none';
@@ -961,8 +969,12 @@
         return;
       }
       
+      // Convert to string if not already
+      const investmentStr = String(investmentText).trim();
+      console.log('Checking payment requirement for:', investmentStr);
+      
       // Check if investment starts with "Ghc" or "GHC" or "GHS"
-      const paymentMatch = investmentText.match(/(?:Ghc|GHC|GHS)\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/i);
+      const paymentMatch = investmentStr.match(/(?:Ghc|GHC|GHS)\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/i);
       
       if (paymentMatch) {
         requiresPayment = true;
