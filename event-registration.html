@@ -906,10 +906,6 @@
             }
           }
           
-          // Store pricing information
-          currentEventPricing = event.eventInvestment || 'Free';
-          checkPaymentRequirement(currentEventPricing);
-          
           // Update event details with fallbacks
           const dateSpan = document.getElementById('event-date');
           const timeSpan = document.getElementById('event-time');
@@ -921,6 +917,9 @@
           if (timeSpan) timeSpan.textContent = event.eventTime || 'TBA';
           if (formatSpan) formatSpan.textContent = event.eventFormat || 'TBA';
           if (venueSpan) venueSpan.textContent = event.eventVenue || 'Check event flyer';
+          
+          // Store and display pricing information
+          currentEventPricing = event.eventInvestment || 'Free';
           if (investmentSpan) investmentSpan.textContent = currentEventPricing || 'TBA';
           
           console.log('Event details updated:', {
@@ -928,8 +927,12 @@
             time: event.eventTime,
             format: event.eventFormat,
             venue: event.eventVenue,
-            investment: currentEventPricing
+            investment: currentEventPricing,
+            rawInvestment: event.eventInvestment
           });
+          
+          // Check payment requirement AFTER displaying investment
+          checkPaymentRequirement(currentEventPricing);
           
           // Hide loading skeleton and show actual content
           document.getElementById('event-loading').style.display = 'none';
@@ -973,21 +976,35 @@
       const investmentStr = String(investmentText).trim();
       console.log('Checking payment requirement for:', investmentStr);
       
-      // Check if investment starts with "Ghc" or "GHC" or "GHS"
-      const paymentMatch = investmentStr.match(/(?:Ghc|GHC|GHS)\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/i);
+      // Check if it's "Free" or "TBA" - no payment required
+      if (investmentStr.toLowerCase() === 'free' || investmentStr.toLowerCase() === 'tba') {
+        requiresPayment = false;
+        paymentAmount = 0;
+        console.log('No payment required - Free/TBA event');
+        updateSubmitButtonText();
+        return;
+      }
       
-      if (paymentMatch) {
+      // Check if investment starts with "Ghc", "GHC", "GHS" or is just a number
+      const paymentMatchWithCurrency = investmentStr.match(/(?:Ghc|GHC|GHS)\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/i);
+      const paymentMatchNumberOnly = investmentStr.match(/^(\d+(?:,\d{3})*(?:\.\d{2})?)$/);
+      
+      if (paymentMatchWithCurrency) {
         requiresPayment = true;
         // Remove commas and parse amount
-        paymentAmount = parseFloat(paymentMatch[1].replace(/,/g, ''));
+        paymentAmount = parseFloat(paymentMatchWithCurrency[1].replace(/,/g, ''));
         console.log('Payment required: GHS ' + paymentAmount);
-        // Update button immediately after setting payment requirement
+        updateSubmitButtonText();
+      } else if (paymentMatchNumberOnly) {
+        // Just a number without currency prefix
+        requiresPayment = true;
+        paymentAmount = parseFloat(paymentMatchNumberOnly[1].replace(/,/g, ''));
+        console.log('Payment required (number only): GHS ' + paymentAmount);
         updateSubmitButtonText();
       } else {
         requiresPayment = false;
         paymentAmount = 0;
-        console.log('No payment required');
-        // Update button immediately after setting payment requirement
+        console.log('No payment required - no valid amount found');
         updateSubmitButtonText();
       }
     }
