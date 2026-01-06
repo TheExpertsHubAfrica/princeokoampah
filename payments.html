@@ -568,9 +568,9 @@
                 </div>
 
                 <div class="col-md-6">
-                  <label for="amount" class="form-label">Payment Amount (GHS) <span class="required">*</span></label>
+                  <label for="amount" class="form-label">Payment Amount (USD) <span class="required">*</span></label>
                   <div class="amount-input-group">
-                    <span class="currency-label">GHS</span>
+                    <span class="currency-label">USD</span>
                     <input type="number" class="form-control" id="amount" name="amount" required placeholder="0.00" min="1" step="0.01">
                   </div>
                 </div>
@@ -648,7 +648,7 @@
     const KORAPAY_PUBLIC_KEY = 'pk_test_zJaCKcNYqMZGGnCKDQBCzBR3Qyamu28cJWmP6asg';
     
     // Apps Script Backend URL - UPDATE THIS AFTER DEPLOYING
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7Q49_f2zU7i5MG64t7ap90NyPUQ8tylkTX2IO9CvplgjRJHSyIYsSCKbZ2UTDh7AU/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQfWauLAjAc5FBrVOZ2YaxSD6S4LV7TsNOkV8H1cVoihBEXq5k3PSfpjJh0X5ObvPZ/exec';
     
     // Payment type selector
     const paymentTypeOptions = document.querySelectorAll('.payment-type-option');
@@ -697,7 +697,7 @@
           key: KORAPAY_PUBLIC_KEY,
           reference: 'PO-' + Date.now() + '-' + Math.floor(Math.random() * 1000000),
           amount: parseFloat(formData.amount),
-          currency: "GHS",
+          currency: "USD",
           customer: {
             name: formData.fullName,
             email: formData.email
@@ -864,7 +864,7 @@
       const amount = parseFloat(document.getElementById('amount').value);
       if (isNaN(amount) || amount < 1) {
         alertMessage.className = 'alert alert-error';
-        alertMessage.innerHTML = '<strong>Invalid Amount!</strong> Please enter a valid amount (minimum GHS 1).';
+        alertMessage.innerHTML = '<strong>Invalid Amount!</strong> Please enter a valid amount (minimum $1 USD).';
         alertMessage.style.display = 'block';
         alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
