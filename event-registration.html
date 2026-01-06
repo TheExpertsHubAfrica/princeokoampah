@@ -476,6 +476,82 @@
       }
     }
     
+    /* Registration Closed Notice */
+    .registration-closed {
+      background: linear-gradient(135deg, #232526 0%, #414345 100%);
+      border: 3px solid #d0bb8e;
+      border-radius: 1rem;
+      padding: 3rem 2rem;
+      text-align: center;
+      color: #fff;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .registration-closed .closed-icon {
+      width: 100px;
+      height: 100px;
+      background: rgba(220, 53, 69, 0.15);
+      border: 3px solid #dc3545;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 2rem;
+      animation: scaleIn 0.5s ease-out;
+    }
+    
+    .registration-closed .closed-icon i {
+      font-size: 3.5rem;
+      color: #dc3545;
+    }
+    
+    .registration-closed h3 {
+      color: #d0bb8e;
+      font-size: 2.25rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .registration-closed p {
+      font-size: 1.2rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .registration-closed .divider {
+      width: 80px;
+      height: 3px;
+      background: #d0bb8e;
+      margin: 2rem auto;
+    }
+    
+    .registration-closed .next-event-cta {
+      margin-top: 2.5rem;
+    }
+    
+    .registration-closed .cta-btn {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: #d0bb8e;
+      color: #232526;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      border-radius: 2rem;
+      transition: all 0.3s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    
+    .registration-closed .cta-btn:hover {
+      background: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(208, 187, 142, 0.4);
+    }
+    
     @media (max-width: 767.98px) {
       .countdown-section {
         padding: 2rem 0;
@@ -714,6 +790,24 @@
     <section class="container" style="margin: 3rem auto 5rem;">
       <div class="row justify-content-center">
         <div class="col-lg-8">
+          <!-- Registration Closed Notice (Hidden by default) -->
+          <div id="registration-closed-notice" class="registration-closed" style="display: none;">
+            <div class="closed-icon">
+              <i class="bi bi-calendar-x-fill"></i>
+            </div>
+            <h3>Registration Closed</h3>
+            <p>We're sorry, but registration for this event has ended.</p>
+            <p>This event concluded and is no longer accepting new registrations.</p>
+            <div class="divider"></div>
+            <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">
+              <strong>Want to attend future events?</strong>
+            </p>
+            <p>Stay connected with us to be the first to know about upcoming events and opportunities.</p>
+            <div class="next-event-cta">
+              <a href="index.html#newsletter" class="cta-btn">Get Notified</a>
+            </div>
+          </div>
+          
           <!-- Success Section (Hidden by default) -->
           <div id="success-section" class="success-section">
             <div class="success-icon">
@@ -1134,6 +1228,9 @@
         countdownStatus.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-2"></i>This event has ended';
         countdownTitle.textContent = 'Event Status';
         
+        // Hide registration form and show closed notice
+        hideRegistrationForm();
+        
         if (countdownInterval) {
           clearInterval(countdownInterval);
         }
@@ -1161,11 +1258,26 @@
       countdownStatus.style.display = 'none';
       countdownTitle.textContent = 'Event Starts In';
       
-      document.getElementById('days').textContent = String(days).padStart(2, '0');
-      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
       document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     }
+    
+    // Hide registration form and show closed notice
+    function hideRegistrationForm() {
+      const formContainer = document.getElementById('registration-form-container');
+      const closedNotice = document.getElementById('registration-closed-notice');
+      
+      if (formContainer) {
+        formContainer.style.display = 'none';
+      }
+      
+      if (closedNotice) {
+        closedNotice.style.display = 'block';
+        // Scroll to notice
+        closedNotice.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+    
+    // Load event data on page loadnds').textContent = String(seconds).padStart(2, '0');
     
     // Load event data on page load
     document.addEventListener('DOMContentLoaded', async function() {
