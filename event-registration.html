@@ -609,7 +609,7 @@
 
     @media (max-width: 767.98px) {
       .event-hero {
-        padding: 100px 0 40px;
+        padding: 30px 0 40px;
         min-height: auto;
       }
       
@@ -1143,34 +1143,32 @@
         console.log('Initializing countdown with:', { dateStr, timeStr });
         
         // Parse the event date and time
-        // Handle formats like "29th November, 2025" or "November 29, 2025"
+        // Handle formats like "14th March, 2026" or "March 14, 2026"
         let cleanDate = dateStr.replace(/st|nd|rd|th/g, '').trim();
         
-        // Try different date parsing approaches
+        // Month name to number mapping
+        const monthMap = {
+          'january': '01', 'february': '02', 'march': '03', 'april': '04',
+          'may': '05', 'june': '06', 'july': '07', 'august': '08',
+          'september': '09', 'october': '10', 'november': '11', 'december': '12'
+        };
+        
         let dateTime;
         
-        // Method 1: Direct parsing
-        dateTime = new Date(`${cleanDate} ${timeStr}`);
-        
-        // Method 2: If failed, try ISO-like format
-        if (isNaN(dateTime.getTime())) {
-          // Convert "29 November, 2025" to "2025-11-29"
-          const parts = cleanDate.match(/(\d+)\s+(\w+),?\s+(\d{4})/);
-          if (parts) {
-            const [, day, month, year] = parts;
-            const monthMap = {
-              'january': '01', 'february': '02', 'march': '03', 'april': '04',
-              'may': '05', 'june': '06', 'july': '07', 'august': '08',
-              'september': '09', 'october': '10', 'november': '11', 'december': '12'
-            };
-            const monthNum = monthMap[month.toLowerCase()];
-            if (monthNum) {
-              dateTime = new Date(`${year}-${monthNum}-${day.padStart(2, '0')}T${convertTo24Hour(timeStr)}`);
-            }
+        // Parse format: "14 March, 2026" or "14 March 2026"
+        const parts = cleanDate.match(/(\d+)\s+(\w+),?\s+(\d{4})/);
+        if (parts) {
+          const [, day, month, year] = parts;
+          const monthNum = monthMap[month.toLowerCase()];
+          if (monthNum) {
+            // Create ISO format date string with time
+            const time24 = convertTo24Hour(timeStr);
+            dateTime = new Date(`${year}-${monthNum}-${day.padStart(2, '0')}T${time24}`);
+            console.log('Parsed date parts:', { year, monthNum, day, time24 });
           }
         }
         
-        if (isNaN(dateTime.getTime())) {
+        if (!dateTime || isNaN(dateTime.getTime())) {
           console.error('Invalid date/time after parsing:', { dateStr, timeStr, cleanDate });
           return;
         }
@@ -1259,6 +1257,9 @@
       countdownStatus.style.display = 'none';
       countdownTitle.textContent = 'Event Starts In';
       
+      document.getElementById('days').textContent = String(days).padStart(2, '0');
+      document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
       document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
     }
     
