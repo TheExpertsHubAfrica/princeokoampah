@@ -829,6 +829,23 @@
           
           <!-- Registration Form -->
           <div id="registration-form-container" class="registration-form" data-aos="fade-up">
+            <!-- Early Bird Banner (Hidden by default) -->
+            <div id="early-bird-banner" style="display: none; background: linear-gradient(135deg, #a79828 0%, #c98e20 100%); color: #fff; padding: 1.25rem; margin-bottom: 1.5rem; border-radius: 0.5rem; text-align: center; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+                <i class="bi bi-lightning-charge-fill" style="font-size: 1.75rem;"></i>
+                <div style="text-align: left;">
+                  <div style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">
+                    🎉 Early Bird Special - Save <span id="discount-percentage">20</span>%!
+                  </div>
+                  <div style="font-size: 0.9rem; opacity: 0.95;">
+                    Register before <strong id="discount-deadline">28th February, 2026</strong> and pay only 
+                    <strong>GHS <span id="discounted-amount">200</span></strong> 
+                    <span style="text-decoration: line-through; opacity: 0.8; margin-left: 4px;">GHS <span id="original-amount">250</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <h3>Register for this Event</h3>
             
             <div id="alert-message" class="alert"></div>
@@ -955,10 +972,16 @@
     // Paystack Configuration
     const PAYSTACK_PUBLIC_KEY = 'pk_live_3d6ce753f1b6ef979bff8653d41ee33ac1a9c427';
     
+    // Early Bird Discount Configuration
+    const EARLY_BIRD_DISCOUNT_PERCENTAGE = 20; // 20% discount
+    const EARLY_BIRD_END_DATE = '2026-02-28T23:59:59'; // Format: YYYY-MM-DDTHH:MM:SS
+    
     // Store current event pricing
     let currentEventPricing = null;
     let requiresPayment = false;
     let paymentAmount = 0;
+    let originalPaymentAmount = 0;
+    let isEarlyBird = false;
     let eventDateTime = null;
     let countdownInterval = null;
     
@@ -1064,6 +1087,7 @@
       if (!investmentText) {
         requiresPayment = false;
         paymentAmount = 0;
+        originalPaymentAmount = 0;
         return;
       }
       
@@ -1075,6 +1099,7 @@
       if (investmentStr.toLowerCase() === 'free' || investmentStr.toLowerCase() === 'tba') {
         requiresPayment = false;
         paymentAmount = 0;
+        originalPaymentAmount = 0;
         console.log('No payment required - Free/TBA event');
         updateSubmitButtonText();
         return;
@@ -1084,21 +1109,43 @@
       const paymentMatchWithCurrency = investmentStr.match(/(?:Ghc|GHC|GHS)\s*(\d+(?:,\d{3})*(?:\.\d{2})?)/i);
       const paymentMatchNumberOnly = investmentStr.match(/^(\d+(?:,\d{3})*(?:\.\d{2})?)$/);
       
+      let extractedAmount = 0;
+      
       if (paymentMatchWithCurrency) {
-        requiresPayment = true;
         // Remove commas and parse amount
-        paymentAmount = parseFloat(paymentMatchWithCurrency[1].replace(/,/g, ''));
-        console.log('Payment required: GHS ' + paymentAmount);
-        updateSubmitButtonText();
+        extractedAmount = parseFloat(paymentMatchWithCurrency[1].replace(/,/g, ''));
       } else if (paymentMatchNumberOnly) {
         // Just a number without currency prefix
+        extractedAmount = parseFloat(paymentMatchNumberOnly[1].replace(/,/g, ''));
+      }
+      
+      if (extractedAmount > 0) {
         requiresPayment = true;
-        paymentAmount = parseFloat(paymentMatchNumberOnly[1].replace(/,/g, ''));
-        console.log('Payment required (number only): GHS ' + paymentAmount);
+        originalPaymentAmount = extractedAmount;
+        
+        // Check if early bird discount applies
+        const now = new Date();
+        const earlyBirdEndDate = new Date(EARLY_BIRD_END_DATE);
+        
+        if (now <= earlyBirdEndDate) {
+          // Apply early bird discount
+          isEarlyBird = true;
+          const discountAmount = (extractedAmount * EARLY_BIRD_DISCOUNT_PERCENTAGE) / 100;
+          paymentAmount = extractedAmount - discountAmount;
+          console.log(`Early Bird Active! Original: GHS ${extractedAmount}, Discount: ${EARLY_BIRD_DISCOUNT_PERCENTAGE}%, Final: GHS ${paymentAmount}`);
+        } else {
+          // No discount
+          isEarlyBird = false;
+          paymentAmount = extractedAmount;
+          console.log('Payment required: GHS ' + paymentAmount);
+        }
+        
         updateSubmitButtonText();
+        updatePricingDisplay();
       } else {
         requiresPayment = false;
         paymentAmount = 0;
+        originalPaymentAmount = 0;
         console.log('No payment required - no valid amount found');
         updateSubmitButtonText();
       }
@@ -1110,7 +1157,11 @@
       console.log('updateSubmitButtonText called - Button found:', !!submitBtn, 'requiresPayment:', requiresPayment, 'amount:', paymentAmount);
       if (submitBtn) {
         if (requiresPayment && paymentAmount > 0) {
-          submitBtn.textContent = 'Pay & Register';
+          if (isEarlyBird) {
+            submitBtn.textContent = `Pay GHS ${paymentAmount.toFixed(2)} & Register (Early Bird!)`;
+          } else {
+            submitBtn.textContent = 'Pay & Register';
+          }
           console.log('Button text updated to:', submitBtn.textContent);
         } else {
           submitBtn.textContent = 'Register Now';
@@ -1119,6 +1170,67 @@
       } else {
         console.error('Submit button not found!');
       }
+    }
+    
+    // Update pricing display with early bird information
+    function updatePricingDisplay() {
+      const investmentSpan = document.getElementById('event-investment');
+      if (!investmentSpan || !requiresPayment) return;
+      
+      if (isEarlyBird) {
+        // Show original price with strikethrough and discounted price
+        investmentSpan.innerHTML = `
+          <span style="text-decoration: line-through; opacity: 0.7; margin-right: 8px;">GHS ${originalPaymentAmount.toFixed(2)}</span>
+          <span style="color: #28a745; font-weight: 700; font-size: 1.2em;">GHS ${paymentAmount.toFixed(2)}</span>
+          <span style="display: block; margin-top: 8px; padding: 6px 12px; background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; border-radius: 4px; font-size: 0.9em;">
+            <i class="bi bi-tag-fill" style="margin-right: 6px;"></i>
+            <strong>${EARLY_BIRD_DISCOUNT_PERCENTAGE}% Early Bird Discount</strong> (Ends ${formatDiscountEndDate()})
+          </span>
+        `;
+        
+        // Update and show early bird banner
+        updateEarlyBirdBanner();
+      } else {
+        // Show regular price
+        investmentSpan.textContent = `GHS ${paymentAmount.toFixed(2)}`;
+        
+        // Hide early bird banner
+        const earlyBirdBanner = document.getElementById('early-bird-banner');
+        if (earlyBirdBanner) {
+          earlyBirdBanner.style.display = 'none';
+        }
+      }
+    }
+    
+    // Update early bird banner with discount information
+    function updateEarlyBirdBanner() {
+      const earlyBirdBanner = document.getElementById('early-bird-banner');
+      if (!earlyBirdBanner) return;
+      
+      if (isEarlyBird && requiresPayment) {
+        // Update banner content
+        const discountPercentageSpan = document.getElementById('discount-percentage');
+        const discountDeadlineSpan = document.getElementById('discount-deadline');
+        const discountedAmountSpan = document.getElementById('discounted-amount');
+        const originalAmountSpan = document.getElementById('original-amount');
+        
+        if (discountPercentageSpan) discountPercentageSpan.textContent = EARLY_BIRD_DISCOUNT_PERCENTAGE;
+        if (discountDeadlineSpan) discountDeadlineSpan.textContent = formatDiscountEndDate();
+        if (discountedAmountSpan) discountedAmountSpan.textContent = paymentAmount.toFixed(2);
+        if (originalAmountSpan) originalAmountSpan.textContent = originalPaymentAmount.toFixed(2);
+        
+        // Show banner
+        earlyBirdBanner.style.display = 'block';
+      } else {
+        earlyBirdBanner.style.display = 'none';
+      }
+    }
+    
+    // Format discount end date for display
+    function formatDiscountEndDate() {
+      const endDate = new Date(EARLY_BIRD_END_DATE);
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      return endDate.toLocaleDateString('en-US', options);
     }
     
     // Populate hidden form fields from page content
@@ -1335,6 +1447,21 @@
               display_name: "Phone Number",
               variable_name: "phone",
               value: formData.phone
+            },
+            {
+              display_name: "Original Amount",
+              variable_name: "original_amount",
+              value: originalPaymentAmount.toFixed(2)
+            },
+            {
+              display_name: "Discount Applied",
+              variable_name: "discount_applied",
+              value: isEarlyBird ? `${EARLY_BIRD_DISCOUNT_PERCENTAGE}% Early Bird` : 'None'
+            },
+            {
+              display_name: "Amount Paid",
+              variable_name: "amount_paid",
+              value: paymentAmount.toFixed(2)
             }
           ]
         },
@@ -1495,6 +1622,14 @@
       formData.forEach((value, key) => {
         data[key] = value;
       });
+      
+      // Add early bird discount information to form data
+      if (requiresPayment) {
+        data.originalAmount = originalPaymentAmount;
+        data.discountApplied = isEarlyBird ? `${EARLY_BIRD_DISCOUNT_PERCENTAGE}%` : 'None';
+        data.finalAmount = paymentAmount;
+        data.earlyBirdStatus = isEarlyBird ? 'Yes' : 'No';
+      }
       
       // Check if payment is required
       if (requiresPayment && paymentAmount > 0) {
