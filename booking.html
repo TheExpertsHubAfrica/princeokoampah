@@ -176,14 +176,53 @@
                                 <input class="form-check-input" type="checkbox" name="service" id="service-entrepreneurship" value="Entrepreneurship Consulting">
                                 <label class="form-check-label" for="service-entrepreneurship">Entrepreneurship Consulting</label>
                             </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="service" id="service-other" value="Other">
+                                <label class="form-check-label" for="service-other">Other (Please specify)</label>
+                            </div>
+                        </div>
+                        <!-- Other Service Input Field (Hidden by default) -->
+                        <div id="other-service-container" style="display: none; margin-top: 10px;">
+                            <input type="text" class="form-control" id="other-service-input" placeholder="Please specify your service...">
                         </div>
                         <script>
+                        // Toggle other service input field
+                        document.getElementById('service-other').addEventListener('change', function() {
+                            const otherContainer = document.getElementById('other-service-container');
+                            const otherInput = document.getElementById('other-service-input');
+                            if (this.checked) {
+                                otherContainer.style.display = 'block';
+                                otherInput.required = true;
+                            } else {
+                                otherContainer.style.display = 'none';
+                                otherInput.required = false;
+                                otherInput.value = '';
+                            }
+                        });
+                        
                         // Ensure at least one service is checked before submitting
                         document.getElementById('booking-form').addEventListener('submit', function(e) {
                             const checked = document.querySelectorAll('input[name="service"]:checked');
+                            const otherCheckbox = document.getElementById('service-other');
+                            const otherInput = document.getElementById('other-service-input');
+                            
                             if (checked.length === 0) {
                                 alert('Please select at least one service.');
                                 e.preventDefault();
+                                return;
+                            }
+                            
+                            // If "Other" is checked, validate the input field
+                            if (otherCheckbox.checked && !otherInput.value.trim()) {
+                                alert('Please specify your service in the "Other" field.');
+                                e.preventDefault();
+                                otherInput.focus();
+                                return;
+                            }
+                            
+                            // If "Other" is checked, update its value with the custom input
+                            if (otherCheckbox.checked && otherInput.value.trim()) {
+                                otherCheckbox.value = 'Other: ' + otherInput.value.trim();
                             }
                         });
                         </script>
