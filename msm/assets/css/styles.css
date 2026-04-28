@@ -488,6 +488,52 @@ textarea {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 2000;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.success-modal {
+  width: min(520px, 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(201, 168, 76, 0.45);
+  background: linear-gradient(180deg, rgba(35, 35, 35, 0.96), rgba(20, 20, 20, 0.98));
+  padding: 28px 22px 18px;
+  text-align: center;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: var(--cream);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  border-color: rgba(201, 168, 76, 0.55);
+  color: var(--gold-light);
+}
+
 .footer {
   border-top: 1px solid rgba(201, 168, 76, 0.22);
   padding: 42px 0;
@@ -631,6 +677,10 @@ td {
 
   .ambassador-perks {
     grid-template-columns: 1fr;
+  }
+
+  .success-modal {
+    padding: 24px 16px 14px;
   }
 
   .ambassador-reg-table thead {

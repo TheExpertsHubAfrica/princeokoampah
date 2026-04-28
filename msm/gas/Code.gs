@@ -1,7 +1,7 @@
 const SPREADSHEET_ID = "1n0jmtZ5HYEVhCJVsK031D0hEVGixFWIP13F4nDqQeBE";
 const ADMIN_EMAILS = ["deforexsp@gmail.com", "mrgyan@veritrack.cloud"];
 const ADMIN_TOKEN = "msmadmin2026secure";
-const PAYSTACK_SECRET_KEY = "sk_test_753e";
+const PAYSTACK_SECRET_KEY = "sk_test_753edc";
 const BASE_DOMAIN = "https://princeokoampah.com/msm";
 const SHEETS = { REG: "Registrations", AMB: "Ambassadors", CLICKS: "Clicks" };
 const SHEET_HEADERS = {};
@@ -90,28 +90,42 @@ function validateRequired_(payload, required) {
 
 function handleRegister_(p) {
   validateRequired_(p, ["fullName", "email", "phone", "ticketType", "amount", "paystackRef"]);
-  const verification = verifyPaystackTransaction_(p.paystackRef);
-  if (!verification.success) throw new Error("Unable to verify payment.");
-  const amountPaid = Number(verification.amount || 0) / 100;
-  if (Math.abs(amountPaid - Number(p.amount)) > 0.1) throw new Error("Payment amount mismatch.");
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const existing = findRegistrationByPaystackRef_(p.paystackRef);
+    if (existing) {
+      return { success: true, ref: p.paystackRef, deduped: true, message: "Registration already processed." };
+    }
 
-  sh_(SHEETS.REG).appendRow([
-    new Date(),
-    p.fullName,
-    p.email,
-    p.phone,
-    p.company || "",
-    p.role || "",
-    p.ticketType,
-    Number(p.amount),
-    p.paystackRef,
-    p.referralCode || "",
-    "",
-  ]);
+    const verification = verifyPaystackTransaction_(p.paystackRef);
+    if (!verification.success) {
+      throw new Error(verification.message || "Unable to verify payment.");
+    }
 
-  sendTicketEmail_(p.fullName, p.email, p.ticketType, p.amount, p.paystackRef);
-  sendAdminNotification_(p);
-  return { success: true, ref: p.paystackRef };
+    const amountPaid = Number(verification.amount || 0) / 100;
+    if (Math.abs(amountPaid - Number(p.amount)) > 0.1) throw new Error("Payment amount mismatch.");
+
+    sh_(SHEETS.REG).appendRow([
+      new Date(),
+      p.fullName,
+      p.email,
+      p.phone,
+      p.company || "",
+      p.role || "",
+      p.ticketType,
+      Number(p.amount),
+      p.paystackRef,
+      p.referralCode || "",
+      "",
+    ]);
+
+    sendTicketEmail_(p.fullName, p.email, p.ticketType, p.amount, p.paystackRef);
+    sendAdminNotification_(p);
+    return { success: true, ref: p.paystackRef };
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function handleAmbassadorSignup_(p) {
@@ -230,12 +244,26 @@ function verifyPaystackTransaction_(reference) {
     muteHttpExceptions: true,
   };
   const url = "https://api.paystack.co/transaction/verify/" + encodeURIComponent(reference);
-  const response = UrlFetchApp.fetch(url, options);
-  const body = JSON.parse(response.getContentText() || "{}");
-  if (body.status !== true || !body.data || body.data.status !== "success") {
-    return { success: false };
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    const body = JSON.parse(response.getContentText() || "{}");
+    if (body.status !== true || !body.data || body.data.status !== "success") {
+      return { success: false, message: "Payment verification failed." };
+    }
+    return { success: true, amount: Number(body.data.amount || 0) };
+  } catch (error) {
+    const message = String((error && error.message) || error || "");
+    if (message.toLowerCase().indexOf("bandwidth quota exceeded") !== -1) {
+      return { success: false, message: "Payment provider check is temporarily busy. Please retry in a minute." };
+    }
+    return { success: false, message: "Unable to reach payment verification service right now." };
   }
-  return { success: true, amount: Number(body.data.amount || 0) };
+}
+
+function findRegistrationByPaystackRef_(paystackRef) {
+  if (!paystackRef) return null;
+  const registrations = values_(SHEETS.REG);
+  return registrations.find((r) => String(r["Paystack Ref"]) === String(paystackRef)) || null;
 }
 
 function generateReferralCode_() {

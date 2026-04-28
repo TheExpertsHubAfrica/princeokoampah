@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbyG9St9cMilDzHqsEoFP7vQ6jLHeJdRgAgil-HlHgPd4WEgdQG-3zeKinqSXXuzIRqP8Q/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbx9P1jr7nUG0ICiSNZjgn_a6QL2Gc3XyDtK9EEWmLP-Q81Zc27ChaVnyy-xBjIqFBz7eg/exec";
 const PAYSTACK_KEY = "pk_test_fae6ba8263469a9e1fe3ba838500d012d8556fc2";
 const EARLY_BIRD_END = new Date("2026-05-15T23:59:59Z");
 
@@ -15,6 +15,36 @@ function setLoading(button, loading, label, loadingLabel) {
   button.disabled = loading;
   button.classList.toggle("is-loading", loading);
   button.textContent = loading ? loadingLabel || "Processing..." : button.dataset.defaultLabel;
+}
+
+function setupSuccessModal() {
+  const modal = qs("#successModal");
+  const closeBtn = qs("#successModalClose");
+  const okBtn = qs("#successModalOk");
+  if (!modal) return { open: () => {}, close: () => {} };
+
+  const close = () => {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  };
+
+  const open = () => {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  };
+
+  closeBtn?.addEventListener("click", close);
+  okBtn?.addEventListener("click", close);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) close();
+  });
+
+  return { open, close };
 }
 
 function urlEncode(data) {
@@ -154,6 +184,7 @@ function setupRegistrationForm() {
   const status = qs("#registerStatus");
   const button = qs("#registerBtn");
   const referralInput = qs("#referralCode");
+  const successModal = setupSuccessModal();
   referralInput.value = getReferralCode();
 
   form.addEventListener("submit", (e) => {
@@ -173,7 +204,8 @@ function setupRegistrationForm() {
         submitRegistration(payload)
           .then((res) => {
             if (!res.success) throw new Error(res.message || "Unable to save registration.");
-            setStatus(status, "You're in! Check your email for your ticket.", "success");
+            setStatus(status, "", "");
+            successModal.open();
             form.reset();
           })
           .catch((err) => setStatus(status, err.message || "Something went wrong. Please try again.", "error"))
