@@ -1,0 +1,196 @@
+const GAS_URL = "https://script.google.com/macros/s/AKfycbyG9St9cMilDzHqsEoFP7vQ6jLHeJdRgAgil-HlHgPd4WEgdQG-3zeKinqSXXuzIRqP8Q/exec";
+const PAYSTACK_KEY = "pk_test_fae6ba8263469a9e1fe3ba838500d012d8556fc2";
+const EARLY_BIRD_END = new Date("2026-05-15T23:59:59Z");
+
+const qs = (s) => document.querySelector(s);
+const qsa = (s) => Array.from(document.querySelectorAll(s));
+
+function setStatus(el, message, type) {
+  el.textContent = message || "";
+  el.className = `status ${type || ""}`.trim();
+}
+
+function setLoading(button, loading, label, loadingLabel) {
+  if (!button.dataset.defaultLabel) button.dataset.defaultLabel = label || button.textContent.trim();
+  button.disabled = loading;
+  button.classList.toggle("is-loading", loading);
+  button.textContent = loading ? loadingLabel || "Processing..." : button.dataset.defaultLabel;
+}
+
+function urlEncode(data) {
+  return new URLSearchParams(data).toString();
+}
+
+function generateRef() {
+  return `MSM-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`.toUpperCase();
+}
+
+function getCookie(name) {
+  const parts = document.cookie.split("; ").find((row) => row.startsWith(`${name}=`));
+  return parts ? decodeURIComponent(parts.split("=")[1]) : "";
+}
+
+function getReferralCode() {
+  return sessionStorage.getItem("msm_ref") || getCookie("msm_ref") || "";
+}
+
+function setupReferralTracking() {
+  const ref = new URLSearchParams(window.location.search).get("ref");
+  if (!ref) return;
+  sessionStorage.setItem("msm_ref", ref);
+  document.cookie = `msm_ref=${encodeURIComponent(ref)}; max-age=${7 * 24 * 60 * 60}; path=/`;
+  fetch(`${GAS_URL}?action=track_click&ref=${encodeURIComponent(ref)}`).catch(() => {});
+}
+
+function setupHeaderAndNav() {
+  const header = qs("#site-header");
+  const navLinks = qsa("#nav-links a");
+  const nav = qs("#nav-links");
+  const hamburger = qs("#hamburger");
+  const sections = qsa("section[id]");
+
+  hamburger?.addEventListener("click", () => nav.classList.toggle("mobile-menu"));
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => nav.classList.remove("mobile-menu"));
+  });
+
+  const update = () => {
+    header.classList.toggle("scrolled", window.scrollY > 24);
+    let current = "";
+    sections.forEach((s) => {
+      if (window.scrollY >= s.offsetTop - 120) current = `#${s.id}`;
+    });
+    navLinks.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === current));
+  };
+
+  update();
+  window.addEventListener("scroll", update, { passive: true });
+}
+
+function setupCountdown() {
+  const el = qs("#countdown");
+  if (!el) return;
+  const tick = () => {
+    const diff = EARLY_BIRD_END.getTime() - Date.now();
+    if (diff <= 0) {
+      el.textContent = "Early bird closed";
+      return;
+    }
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    el.textContent = `${d}d ${h}h left`;
+  };
+  tick();
+  setInterval(tick, 60000);
+}
+
+function setupPricing() {
+  const early = qs("#earlyBirdCard");
+  const regular = qs("#regularCard");
+  const ticketType = qs("#ticketType");
+  const amount = qs("#amount");
+  const buttons = qsa(".select-ticket");
+  const earlyClosed = new Date() > EARLY_BIRD_END;
+
+  if (earlyClosed) {
+    early.classList.add("closed");
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = "CLOSED";
+    early.appendChild(badge);
+    early.querySelector("button").disabled = true;
+    selectCard(regular);
+  } else {
+    selectCard(early);
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".price-card");
+      if (card.classList.contains("closed")) return;
+      selectCard(card);
+      qs("#register").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  function selectCard(card) {
+    [early, regular].forEach((c) => c.classList.remove("selected"));
+    card.classList.add("selected");
+    ticketType.value = card.dataset.type;
+    amount.value = card.dataset.amount;
+  }
+}
+
+function submitRegistration(payload) {
+  return fetch(`${GAS_URL}?action=register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body: urlEncode(payload),
+  }).then((r) => r.json());
+}
+
+function launchPaystack(formData, onSuccess, onClose) {
+  const handler = PaystackPop.setup({
+    key: PAYSTACK_KEY,
+    email: formData.email,
+    amount: Number(formData.amount) * 100,
+    currency: "GHS",
+    ref: generateRef(),
+    metadata: {
+      custom_fields: [
+        { display_name: "Full Name", variable_name: "full_name", value: formData.fullName },
+        { display_name: "Phone", variable_name: "phone", value: formData.phone },
+        { display_name: "Ticket Type", variable_name: "ticket_type", value: formData.ticketType },
+      ],
+    },
+    callback: onSuccess,
+    onClose,
+  });
+  handler.openIframe();
+}
+
+function setupRegistrationForm() {
+  const form = qs("#registrationForm");
+  const status = qs("#registerStatus");
+  const button = qs("#registerBtn");
+  const referralInput = qs("#referralCode");
+  referralInput.value = getReferralCode();
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    setStatus(status, "", "");
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (!data.ticketType || !data.amount) {
+      setStatus(status, "Please select a ticket option first.", "error");
+      return;
+    }
+    setLoading(button, true, "SECURE YOUR SEAT NOW", "Processing Payment");
+    launchPaystack(
+      data,
+      (response) => {
+        qs("#paystackRef").value = response.reference;
+        const payload = { ...data, paystackRef: response.reference, referralCode: getReferralCode() };
+        submitRegistration(payload)
+          .then((res) => {
+            if (!res.success) throw new Error(res.message || "Unable to save registration.");
+            setStatus(status, "You're in! Check your email for your ticket.", "success");
+            form.reset();
+          })
+          .catch((err) => setStatus(status, err.message || "Something went wrong. Please try again.", "error"))
+          .finally(() => setLoading(button, false, "SECURE YOUR SEAT NOW"));
+      },
+      () => {
+        setStatus(status, "Payment was not completed.", "error");
+        setLoading(button, false, "SECURE YOUR SEAT NOW");
+      }
+    );
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupReferralTracking();
+  setupHeaderAndNav();
+  setupCountdown();
+  setupPricing();
+  setupRegistrationForm();
+});

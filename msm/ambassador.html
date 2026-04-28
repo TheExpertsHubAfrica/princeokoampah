@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MSM Ambassador Program</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <main class="auth-wrap">
+      <div class="container">
+        <section class="panel">
+          <h1 class="section-title">JOIN THE AMBASSADOR PROGRAM</h1>
+          <p>Earn commission. Grow with us.</p>
+          <p>Earn 15% on every registration you refer.</p>
+          <p>GHS 150 ticket → GHS 22.50 per sale<br />GHS 200 ticket → GHS 30.00 per sale</p>
+          <p>⭐ 5 sales → Free Ticket<br />⭐ 10 sales → Free Ticket + Volunteer Role</p>
+
+          <form id="ambassadorForm">
+            <div class="form-grid">
+              <div class="field"><label for="fullName">Full Name *</label><input id="fullName" name="fullName" required /></div>
+              <div class="field"><label for="email">Email Address *</label><input id="email" name="email" type="email" required /></div>
+              <div class="field"><label for="phone">Phone Number *</label><input id="phone" name="phone" type="tel" required /></div>
+              <div class="field"><label for="socialHandle">Social Media Handle</label><input id="socialHandle" name="socialHandle" /></div>
+              <div class="field full">
+                <label for="why">Why do you want to be an ambassador? *</label>
+                <textarea id="why" name="why" required></textarea>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="ambassadorBtn" type="submit">BECOME AN AMBASSADOR</button>
+            <p id="ambassadorStatus" class="status" aria-live="polite"></p>
+          </form>
+        </section>
+      </div>
+    </main>
+    <script src="assets/js/ambassador.js"></script>
+  </body>
+</html>

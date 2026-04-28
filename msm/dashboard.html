@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MSM Ambassador Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/styles.css" />
+  </head>
+  <body>
+    <main class="dashboard-wrap">
+      <div class="container">
+        <section id="dashError" class="panel" style="display: none">
+          <h1 class="section-title">Dashboard Access</h1>
+          <p>Invalid or expired link. Please check your email for your dashboard link.</p>
+        </section>
+
+        <section id="dashContent" style="display: none">
+          <div class="panel">
+            <h1 class="section-title" id="ambassadorName">Ambassador Dashboard</h1>
+            <div class="stats">
+              <div class="stat"><div class="stat-label">Total Clicks</div><div class="stat-value" id="sClicks">0</div></div>
+              <div class="stat"><div class="stat-label">Total Registrations</div><div class="stat-value" id="sRegs">0</div></div>
+              <div class="stat"><div class="stat-label">Total Earnings</div><div class="stat-value" id="sEarn">GHS 0.00</div></div>
+              <div class="stat"><div class="stat-label">Reward Status</div><div class="stat-value" id="sReward">0 of 5</div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h2>Referral Link</h2>
+            <p id="refLink" class="muted"></p>
+            <button class="btn btn-primary" id="copyBtn">Copy Link</button>
+            <a class="btn btn-primary" id="whatsappBtn" target="_blank" rel="noopener">Share on WhatsApp</a>
+          </div>
+
+          <div class="panel">
+            <h2>Registrations</h2>
+            <table id="regTable" class="ambassador-reg-table">
+              <thead><tr><th>Date</th><th>Attendee Name</th><th>Ticket Type</th><th>Amount</th><th>Commission</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h2>Rewards</h2>
+            <p>Free Ticket (5 sales)</p>
+            <div class="progress"><span id="p5"></span></div>
+            <p>Free Ticket + Volunteer Role (10 sales)</p>
+            <div class="progress"><span id="p10"></span></div>
+            <p id="rewardText" class="muted"></p>
+          </div>
+        </section>
+      </div>
+    </main>
+    <script src="assets/js/dashboard.js"></script>
+  </body>
+</html>
