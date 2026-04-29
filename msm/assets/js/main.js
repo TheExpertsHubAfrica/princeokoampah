@@ -219,10 +219,115 @@ function setupRegistrationForm() {
   });
 }
 
+function setupWorkshopCarousel() {
+  const root = document.querySelector(".workshop-carousel");
+  const track = document.getElementById("workshopCarouselTrack");
+  const dotsWrap = document.getElementById("workshopCarouselDots");
+  const prevBtn = root?.querySelector(".workshop-carousel-prev");
+  const nextBtn = root?.querySelector(".workshop-carousel-next");
+  if (!root || !track || !dotsWrap || !prevBtn || !nextBtn) return;
+
+  const slides = track.querySelectorAll(".workshop-carousel-slide");
+  const n = slides.length;
+  if (n === 0) return;
+
+  let index = 0;
+  let timer = null;
+  const intervalMs = 2800;
+
+  for (let i = 0; i < n; i++) {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.setAttribute("role", "tab");
+    dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+    dot.addEventListener("click", () => {
+      goTo(i);
+      restartAuto();
+    });
+    dotsWrap.appendChild(dot);
+  }
+
+  const dots = () => dotsWrap.querySelectorAll("button");
+
+  function goTo(i) {
+    index = ((i % n) + n) % n;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    dots().forEach((btn, j) => {
+      btn.classList.toggle("is-active", j === index);
+      btn.setAttribute("aria-selected", String(j === index));
+    });
+  }
+
+  function nextSlide() {
+    goTo(index + 1);
+  }
+
+  function prevSlide() {
+    goTo(index - 1);
+  }
+
+  function startAuto() {
+    stopAuto();
+    timer = window.setInterval(nextSlide, intervalMs);
+  }
+
+  function stopAuto() {
+    if (timer != null) {
+      window.clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function restartAuto() {
+    stopAuto();
+    startAuto();
+  }
+
+  prevBtn.addEventListener("click", () => {
+    prevSlide();
+    restartAuto();
+  });
+  nextBtn.addEventListener("click", () => {
+    nextSlide();
+    restartAuto();
+  });
+
+  root.addEventListener("mouseenter", stopAuto);
+  root.addEventListener("mouseleave", startAuto);
+  root.addEventListener("focusin", stopAuto);
+  root.addEventListener("focusout", (e) => {
+    if (!root.contains(e.relatedTarget)) startAuto();
+  });
+
+  let touchStartX = 0;
+  track.addEventListener(
+    "touchstart",
+    (e) => {
+      touchStartX = e.touches[0].clientX;
+    },
+    { passive: true }
+  );
+  track.addEventListener(
+    "touchend",
+    (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) < 45) return;
+      if (dx > 0) prevSlide();
+      else nextSlide();
+      restartAuto();
+    },
+    { passive: true }
+  );
+
+  goTo(0);
+  startAuto();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setupReferralTracking();
   setupHeaderAndNav();
   setupCountdown();
   setupPricing();
   setupRegistrationForm();
+  setupWorkshopCarousel();
 });
