@@ -229,17 +229,17 @@ img {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(rgba(13, 13, 13, 0.75), rgba(13, 13, 13, 0.92));
+  background: linear-gradient(rgba(13, 13, 13, 0.38), rgba(13, 13, 13, 0.58));
 }
 
 .hero-bg {
   position: absolute;
   inset: 0;
-  background-image: linear-gradient(140deg, rgba(34, 34, 34, 0.25) 0%, rgba(17, 17, 17, 0.48) 50%, rgba(31, 26, 18, 0.42) 100%), url("../images/developer-3.jpg");
+  background-image: linear-gradient(140deg, rgba(34, 34, 34, 0.12) 0%, rgba(17, 17, 17, 0.22) 50%, rgba(31, 26, 18, 0.2) 100%), url("../images/developer-3.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.92;
+  opacity: 1;
 }
 
 .hero-content {
