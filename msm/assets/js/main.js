@@ -323,6 +323,48 @@ function setupWorkshopCarousel() {
   startAuto();
 }
 
+function setupSpeakerBios() {
+  document.querySelectorAll(".speaker-bio-wrap").forEach((wrap) => {
+    const bio = wrap.querySelector(".speaker-bio");
+    const btn = wrap.querySelector(".speaker-read-more");
+    if (!bio || !btn) return;
+
+    function updateTruncationUi() {
+      if (bio.classList.contains("is-expanded")) {
+        btn.hidden = false;
+        btn.textContent = "Read less";
+        btn.setAttribute("aria-expanded", "true");
+        return;
+      }
+      bio.classList.add("is-truncated");
+      bio.classList.remove("is-expanded");
+      void bio.offsetHeight;
+      const needsToggle = bio.scrollHeight > bio.clientHeight + 2;
+      btn.hidden = !needsToggle;
+      btn.textContent = "Read more";
+      btn.setAttribute("aria-expanded", "false");
+    }
+
+    btn.addEventListener("click", () => {
+      const expanding = !bio.classList.contains("is-expanded");
+      bio.classList.toggle("is-expanded", expanding);
+      bio.classList.toggle("is-truncated", !expanding);
+      if (expanding) {
+        btn.hidden = false;
+        btn.textContent = "Read less";
+        btn.setAttribute("aria-expanded", "true");
+      } else {
+        updateTruncationUi();
+      }
+    });
+
+    updateTruncationUi();
+    window.addEventListener("resize", () => {
+      if (!bio.classList.contains("is-expanded")) updateTruncationUi();
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   setupReferralTracking();
   setupHeaderAndNav();
@@ -330,4 +372,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setupPricing();
   setupRegistrationForm();
   setupWorkshopCarousel();
+  setupSpeakerBios();
 });
