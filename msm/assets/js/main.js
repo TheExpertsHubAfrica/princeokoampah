@@ -117,6 +117,7 @@ function setupCountdown() {
 function setupPricing() {
   const early = qs("#earlyBirdCard");
   const regular = qs("#regularCard");
+  const cards = [early, regular];
   const ticketType = qs("#ticketType");
   const amount = qs("#amount");
   const buttons = qsa(".select-ticket");
@@ -140,6 +141,15 @@ function setupPricing() {
       if (card.classList.contains("closed")) return;
       selectCard(card);
       qs("#register").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
+
+  cards.forEach((card) => {
+    if (!card) return;
+    card.addEventListener("click", (e) => {
+      if (e.target.closest("button")) return;
+      if (card.classList.contains("closed")) return;
+      selectCard(card);
     });
   });
 
