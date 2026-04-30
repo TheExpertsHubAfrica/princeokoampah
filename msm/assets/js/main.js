@@ -1,6 +1,7 @@
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxjKRPS92dZd-q4A0isFKsn9eBuhwi6Q-1nfBnxl4f186MLJAbuhSQI6J3bgqu4fE1uOw/exec";
 const PAYSTACK_KEY = "pk_live_3d6ce753f1b6ef979bff8653d41ee33ac1a9c427";
 const EARLY_BIRD_END = new Date("2026-05-15T23:59:59Z");
+const ATTENDEES_WHATSAPP_URL = "https://chat.whatsapp.com/EF0BBIF0WBfCZqn0Pu3UcC?mode=gi_t";
 
 const qs = (s) => document.querySelector(s);
 const qsa = (s) => Array.from(document.querySelectorAll(s));
@@ -21,6 +22,7 @@ function setupSuccessModal() {
   const modal = qs("#successModal");
   const closeBtn = qs("#successModalClose");
   const okBtn = qs("#successModalOk");
+  const joinWhatsappBtn = qs("#successModalJoinWhatsapp");
   if (!modal) return { open: () => {}, close: () => {} };
 
   const close = () => {
@@ -37,6 +39,10 @@ function setupSuccessModal() {
 
   closeBtn?.addEventListener("click", close);
   okBtn?.addEventListener("click", close);
+  joinWhatsappBtn?.addEventListener("click", () => {
+    window.open(ATTENDEES_WHATSAPP_URL, "_blank", "noopener");
+    close();
+  });
   modal.addEventListener("click", (e) => {
     if (e.target === modal) close();
   });
