@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx9P1jr7nUG0ICiSNZjgn_a6QL2Gc3XyDtK9EEWmLP-Q81Zc27ChaVnyy-xBjIqFBz7eg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxjKRPS92dZd-q4A0isFKsn9eBuhwi6Q-1nfBnxl4f186MLJAbuhSQI6J3bgqu4fE1uOw/exec";
 
 const form = document.getElementById("ambassadorForm");
 const button = document.getElementById("ambassadorBtn");

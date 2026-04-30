@@ -269,6 +269,36 @@ img {
   font-weight: 600;
 }
 
+.pill-early-bird {
+  background: linear-gradient(130deg, rgba(201, 168, 76, 0.22), rgba(224, 192, 112, 0.1));
+  border-color: rgba(224, 192, 112, 0.95);
+  color: #f4dd9f;
+  box-shadow: 0 0 0 rgba(224, 192, 112, 0.25), 0 0 0 rgba(224, 192, 112, 0.18);
+  animation: early-bird-flicker 2.2s ease-in-out infinite;
+}
+
+@keyframes early-bird-flicker {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(224, 192, 112, 0.25), 0 0 18px rgba(224, 192, 112, 0.2);
+    transform: translateY(0);
+  }
+  40% {
+    box-shadow: 0 0 0 rgba(224, 192, 112, 0.2), 0 0 26px rgba(224, 192, 112, 0.35);
+    transform: translateY(-1px);
+  }
+  60% {
+    box-shadow: 0 0 0 rgba(224, 192, 112, 0.12), 0 0 14px rgba(224, 192, 112, 0.16);
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill-early-bird {
+    animation: none;
+  }
+}
+
 .countdown {
   display: block;
   font-size: 0.8rem;
@@ -632,6 +662,29 @@ img {
 
 .price-card.selected {
   outline: 2px solid rgba(224, 192, 112, 0.85);
+  animation: selected-card-glow 1.1s steps(1, end) infinite;
+}
+
+@keyframes selected-card-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(224, 192, 112, 0);
+  }
+  20% {
+    box-shadow: 0 0 16px rgba(224, 192, 112, 0.28);
+  }
+  35% {
+    box-shadow: 0 0 0 rgba(224, 192, 112, 0);
+  }
+  48% {
+    box-shadow: 0 0 20px rgba(224, 192, 112, 0.36);
+  }
+  58% {
+    box-shadow: 0 0 0 rgba(224, 192, 112, 0);
+  }
+  72% {
+    box-shadow: 0 0 13px rgba(224, 192, 112, 0.24);
+  }
 }
 
 .badge {
@@ -925,6 +978,17 @@ td {
 
   .ambassador-perks {
     grid-template-columns: 1fr;
+  }
+
+  .partners-logos {
+    gap: 14px 16px;
+  }
+
+  .partners-logos img {
+    max-height: 30px;
+    max-width: min(96px, 28vw);
+    padding: 4px 7px;
+    border-radius: 9px;
   }
 
   .success-modal {

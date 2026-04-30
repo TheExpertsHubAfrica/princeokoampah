@@ -1,5 +1,5 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbx9P1jr7nUG0ICiSNZjgn_a6QL2Gc3XyDtK9EEWmLP-Q81Zc27ChaVnyy-xBjIqFBz7eg/exec";
-const PAYSTACK_KEY = "pk_test_fae6ba8263469a9e1fe3ba838500d012d8556fc2";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxjKRPS92dZd-q4A0isFKsn9eBuhwi6Q-1nfBnxl4f186MLJAbuhSQI6J3bgqu4fE1uOw/exec";
+const PAYSTACK_KEY = "pk_live_3d6ce753f1b6ef979bff8653d41ee33ac1a9c427";
 const EARLY_BIRD_END = new Date("2026-05-15T23:59:59Z");
 
 const qs = (s) => document.querySelector(s);
