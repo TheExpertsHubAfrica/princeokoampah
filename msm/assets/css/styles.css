@@ -554,8 +554,8 @@ img {
   margin-top: 26px;
   display: grid;
   gap: 22px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  max-width: 960px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -939,8 +939,10 @@ td {
 
 @media (max-width: 960px) {
   .cards-3,
-  .speaker-grid,
   .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .speaker-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .split,
