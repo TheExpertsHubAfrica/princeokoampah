@@ -1,0 +1,10 @@
+{
+  "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/ambassador.html",
+      "destination": "/msm/ambassador.html",
+      "permanent": true
+    }
+  ]
+}
