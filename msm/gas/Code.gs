@@ -318,9 +318,9 @@ function sendAdminNotification_(p) {
 function sendAmbassadorWelcome_(name, email, code, token) {
   const subject = "Welcome to the MSM Ambassador Program";
   const referralLink = BASE_DOMAIN + "/?ref=" + code;
-  const dashboardLink = BASE_DOMAIN + "/dashboard.html?token=" + token;
+  const dashboardLink = BASE_DOMAIN + "/dashboard/?token=" + token;
   const body = "Hi " + name + ",\n\nYou're officially an MSM Ambassador.\n\nYOUR REFERRAL LINK:\n" + BASE_DOMAIN + "/?ref=" + code +
-    "\n\nYOUR DASHBOARD:\n" + BASE_DOMAIN + "/dashboard.html?token=" + token +
+    "\n\nYOUR DASHBOARD:\n" + BASE_DOMAIN + "/dashboard/?token=" + token +
     "\n\nCOMMISSION STRUCTURE:\n- GHS 150 ticket → GHS 22.50 per sale\n- GHS 200 ticket → GHS 30.00 per sale\n\nREWARDS:\n- 5 sales → Free Ticket\n- 10 sales → Free Ticket + Volunteer Role\n\nShare your link. Track your earnings. Win big.\n\n— The MSM Workshop Team";
   const html = '<div style="font-family:Montserrat,Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:26px;max-width:620px;margin:auto;border:1px solid #c9a84c;border-radius:10px;">' +
     '<h1 style="margin:0;font-family:Bebas Neue,Arial,sans-serif;letter-spacing:1px;color:#e0c070;">WELCOME, MSM AMBASSADOR</h1>' +

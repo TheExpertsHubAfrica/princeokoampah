@@ -3,7 +3,22 @@
   "redirects": [
     {
       "source": "/ambassador.html",
-      "destination": "/msm/ambassador.html",
+      "destination": "/msm/ambassador/",
+      "permanent": true
+    },
+    {
+      "source": "/msm/ambassador.html",
+      "destination": "/msm/ambassador/",
+      "permanent": true
+    },
+    {
+      "source": "/msm/admin.html",
+      "destination": "/msm/admin/",
+      "permanent": true
+    },
+    {
+      "source": "/msm/dashboard.html",
+      "destination": "/msm/dashboard/",
       "permanent": true
     }
   ]
