@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxjKRPS92dZd-q4A0isFKsn9eBuhwi6Q-1nfBnxl4f186MLJAbuhSQI6J3bgqu4fE1uOw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw-_ZgyRY3NYgEfiLZyGWRxRT7MvHN9ICsDSPJz32TaXAJo2f2FIRpyj5H3OUua6D3DWg/exec";
 const ADMIN_TOKEN = "msmadmin2026secure";
 const ADMIN_HASH = "8795b99c3abe1902a4f56f239398b8f1b1ecf9071f9bde17c31652f44dd4c073";
 const fmt = new Intl.NumberFormat("en-GH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });

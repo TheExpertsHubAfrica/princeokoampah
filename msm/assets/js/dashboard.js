@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxjKRPS92dZd-q4A0isFKsn9eBuhwi6Q-1nfBnxl4f186MLJAbuhSQI6J3bgqu4fE1uOw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw-_ZgyRY3NYgEfiLZyGWRxRT7MvHN9ICsDSPJz32TaXAJo2f2FIRpyj5H3OUua6D3DWg/exec";
 
 const fmt = new Intl.NumberFormat("en-GH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const token = new URLSearchParams(window.location.search).get("token");
