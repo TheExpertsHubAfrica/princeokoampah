@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw-_ZgyRY3NYgEfiLZyGWRxRT7MvHN9ICsDSPJz32TaXAJo2f2FIRpyj5H3OUua6D3DWg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzJgd9wY15-eqp8M5fd86kZPPr4It13oMRh_sI88oGKk-Cr_LC01v2HJSznDBzk_qGCxg/exec";
 const PAYSTACK_KEY = "pk_live_3d6ce753f1b6ef979bff8653d41ee33ac1a9c427";
 const EARLY_BIRD_END = new Date("2026-06-01T23:59:59Z");
 const ATTENDEES_WHATSAPP_URL = "https://chat.whatsapp.com/EF0BBIF0WBfCZqn0Pu3UcC?mode=gi_t";
@@ -120,6 +120,93 @@ function setupCountdown() {
   setInterval(tick, 60000);
 }
 
+let activePromoCode = "";
+
+function clearPromoSelection() {
+  activePromoCode = "";
+  const promoHidden = qs("#promoCode");
+  const promoInput = qs("#promoCodeInput");
+  const promoApplied = qs("#promoApplied");
+  const promoFeedback = qs("#promoFeedback");
+  const amount = qs("#amount");
+  const registerBtn = qs("#registerBtn");
+  if (promoHidden) promoHidden.value = "";
+  if (promoInput) promoInput.disabled = false;
+  if (promoApplied) promoApplied.hidden = true;
+  if (promoFeedback) {
+    promoFeedback.textContent = "";
+    promoFeedback.className = "promo-feedback muted";
+  }
+  if (registerBtn) registerBtn.textContent = "SECURE YOUR SEAT NOW";
+  const selected = document.querySelector(".price-card.selected");
+  if (selected && amount) amount.value = selected.dataset.amount;
+}
+
+function applyPromoUi(message) {
+  const promoApplied = qs("#promoApplied");
+  const promoFeedback = qs("#promoFeedback");
+  const amount = qs("#amount");
+  const registerBtn = qs("#registerBtn");
+  if (promoApplied) promoApplied.hidden = false;
+  if (promoFeedback) {
+    promoFeedback.textContent = message || "Ticket covered by Revolead";
+    promoFeedback.className = "promo-feedback success";
+  }
+  if (amount) amount.value = "0";
+  if (registerBtn) registerBtn.textContent = "COMPLETE REGISTRATION";
+}
+
+async function validatePromoOnServer(code) {
+  const res = await fetch(`${GAS_URL}?action=validate_promo&code=${encodeURIComponent(code)}`);
+  return res.json();
+}
+
+function setupPromoCode() {
+  const promoInput = qs("#promoCodeInput");
+  const applyBtn = qs("#applyPromoBtn");
+  const removeBtn = qs("#removePromoBtn");
+  const promoHidden = qs("#promoCode");
+  if (!promoInput || !applyBtn || !promoHidden) return;
+
+  const apply = async () => {
+    const code = promoInput.value.trim();
+    const promoFeedback = qs("#promoFeedback");
+    if (!code) {
+      if (promoFeedback) {
+        promoFeedback.textContent = "Enter a promo code.";
+        promoFeedback.className = "promo-feedback error";
+      }
+      return;
+    }
+    setLoading(applyBtn, true, "Apply", "Checking...");
+    try {
+      const data = await validatePromoOnServer(code);
+      if (!data.success) throw new Error(data.message || "Invalid promo code.");
+      activePromoCode = code;
+      promoHidden.value = code;
+      promoInput.disabled = true;
+      applyPromoUi(data.message);
+    } catch (error) {
+      clearPromoSelection();
+      if (promoFeedback) {
+        promoFeedback.textContent = error.message || "Invalid promo code.";
+        promoFeedback.className = "promo-feedback error";
+      }
+    } finally {
+      setLoading(applyBtn, false, "Apply");
+    }
+  };
+
+  applyBtn.addEventListener("click", apply);
+  promoInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      apply();
+    }
+  });
+  removeBtn?.addEventListener("click", clearPromoSelection);
+}
+
 function setupPricing() {
   const early = qs("#earlyBirdCard");
   const regular = qs("#regularCard");
@@ -160,6 +247,7 @@ function setupPricing() {
   });
 
   function selectCard(card) {
+    if (activePromoCode) clearPromoSelection();
     [early, regular].forEach((c) => c.classList.remove("selected"));
     card.classList.add("selected");
     ticketType.value = card.dataset.type;
@@ -203,26 +291,84 @@ function setupRegistrationForm() {
   const successModal = setupSuccessModal();
   referralInput.value = getReferralCode();
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     setStatus(status, "", "");
     const data = Object.fromEntries(new FormData(form).entries());
-    if (!data.ticketType || !data.amount) {
+    if (!data.ticketType) {
       setStatus(status, "Please select a ticket option first.", "error");
       return;
     }
+
+    let promoCode = (data.promoCode || activePromoCode || data.promoCodeInput || "").trim();
+    if (promoCode && !activePromoCode) {
+      setLoading(button, true, "SECURE YOUR SEAT NOW", "Checking promo...");
+      try {
+        const check = await validatePromoOnServer(promoCode);
+        if (!check.success) throw new Error(check.message || "Invalid promo code.");
+        activePromoCode = promoCode;
+        qs("#promoCode").value = promoCode;
+        applyPromoUi(check.message);
+      } catch (err) {
+        setStatus(status, err.message || "Invalid promo code.", "error");
+        setLoading(button, false, "SECURE YOUR SEAT NOW");
+        return;
+      }
+    }
+    if (promoCode) {
+      setLoading(button, true, "COMPLETE REGISTRATION", "Submitting...");
+      const payload = {
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        company: data.company || "",
+        role: data.role || "",
+        ticketType: data.ticketType,
+        promoCode,
+        referralCode: getReferralCode(),
+      };
+      submitRegistration(payload)
+        .then((res) => {
+          if (!res.success) throw new Error(res.message || "Unable to save registration.");
+          setStatus(status, "", "");
+          successModal.open();
+          form.reset();
+          clearPromoSelection();
+          referralInput.value = getReferralCode();
+        })
+        .catch((err) => setStatus(status, err.message || "Something went wrong. Please try again.", "error"))
+        .finally(() => setLoading(button, false, "COMPLETE REGISTRATION"));
+      return;
+    }
+
+    if (!data.amount) {
+      setStatus(status, "Please select a ticket option first.", "error");
+      return;
+    }
+
     setLoading(button, true, "SECURE YOUR SEAT NOW", "Processing Payment");
     launchPaystack(
       data,
       (response) => {
         qs("#paystackRef").value = response.reference;
-        const payload = { ...data, paystackRef: response.reference, referralCode: getReferralCode() };
+        const payload = {
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone,
+          company: data.company || "",
+          role: data.role || "",
+          ticketType: data.ticketType,
+          amount: data.amount,
+          paystackRef: response.reference,
+          referralCode: getReferralCode(),
+        };
         submitRegistration(payload)
           .then((res) => {
             if (!res.success) throw new Error(res.message || "Unable to save registration.");
             setStatus(status, "", "");
             successModal.open();
             form.reset();
+            referralInput.value = getReferralCode();
           })
           .catch((err) => setStatus(status, err.message || "Something went wrong. Please try again.", "error"))
           .finally(() => setLoading(button, false, "SECURE YOUR SEAT NOW"));
@@ -386,6 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
   setupHeaderAndNav();
   setupCountdown();
   setupPricing();
+  setupPromoCode();
   setupRegistrationForm();
   setupWorkshopCarousel();
   setupSpeakerBios();

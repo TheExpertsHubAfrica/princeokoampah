@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbw-_ZgyRY3NYgEfiLZyGWRxRT7MvHN9ICsDSPJz32TaXAJo2f2FIRpyj5H3OUua6D3DWg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbzJgd9wY15-eqp8M5fd86kZPPr4It13oMRh_sI88oGKk-Cr_LC01v2HJSznDBzk_qGCxg/exec";
 const ADMIN_TOKEN = "msmadmin2026secure";
 const ADMIN_HASH = "8795b99c3abe1902a4f56f239398b8f1b1ecf9071f9bde17c31652f44dd4c073";
 const fmt = new Intl.NumberFormat("en-GH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -68,7 +68,7 @@ function renderRegTable() {
   document.querySelector("#adminRegTable tbody").innerHTML = rows
     .map(
       (r) =>
-        `<tr><td data-label="Date">${safe(r.timestamp)}</td><td data-label="Name">${safe(r.fullName)}</td><td data-label="Email">${safe(r.email)}</td><td data-label="Phone">${safe(r.phone)}</td><td data-label="Company">${safe(r.company)}</td><td data-label="Role">${safe(r.role)}</td><td data-label="Ticket Type">${safe(r.ticketType)}</td><td data-label="Amount">GHS ${fmt.format(Number(r.amount || 0))}</td><td data-label="Paystack Ref">${safe(r.paystackRef)}</td><td data-label="Referred By">${safe(r.referralCode || "Direct")}</td></tr>`
+        `<tr><td data-label="Date">${safe(r.timestamp)}</td><td data-label="Name">${safe(r.fullName)}</td><td data-label="Email">${safe(r.email)}</td><td data-label="Phone">${safe(r.phone)}</td><td data-label="Company">${safe(r.company)}</td><td data-label="Role">${safe(r.role)}</td><td data-label="Ticket Type">${safe(r.ticketType)}</td><td data-label="Amount">GHS ${fmt.format(Number(r.amount || 0))}</td><td data-label="Promo">${safe(r.promoCode || "—")}</td><td data-label="Paystack Ref">${safe(r.paystackRef)}</td><td data-label="Referred By">${safe(r.referralCode || "Direct")}</td></tr>`
     )
     .join("");
 }
@@ -123,8 +123,10 @@ document.getElementById("adminLoginForm").addEventListener("submit", async (e) =
 document.getElementById("exportRegs").addEventListener("click", () => {
   if (!adminData) return;
   setButtonLoading(exportRegsBtn, true, "Exporting");
-  const rows = [["Date", "Name", "Email", "Phone", "Company", "Role", "Ticket Type", "Amount", "Paystack Ref", "Referred By"]];
-  adminData.registrations.forEach((r) => rows.push([r.timestamp, r.fullName, r.email, r.phone, r.company, r.role, r.ticketType, r.amount, r.paystackRef, r.referralCode || "Direct"]));
+  const rows = [["Date", "Name", "Email", "Phone", "Company", "Role", "Ticket Type", "Amount", "Promo", "Paystack Ref", "Referred By"]];
+  adminData.registrations.forEach((r) =>
+    rows.push([r.timestamp, r.fullName, r.email, r.phone, r.company, r.role, r.ticketType, r.amount, r.promoCode || "", r.paystackRef, r.referralCode || "Direct"])
+  );
   downloadCsv("msm-registrations.csv", rows);
   setTimeout(() => setButtonLoading(exportRegsBtn, false), 500);
 });

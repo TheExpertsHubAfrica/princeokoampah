@@ -718,6 +718,72 @@ form .btn {
   margin-bottom: 6px;
 }
 
+.promo-wrap {
+  margin-top: 18px;
+}
+
+.promo-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.promo-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.promo-feedback {
+  margin: 8px 0 0;
+  min-height: 1.2em;
+}
+
+.promo-feedback.success {
+  color: var(--gold-light);
+}
+
+.promo-feedback.error {
+  color: #f08a8a;
+}
+
+.promo-applied {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(201, 168, 76, 0.55);
+  border-radius: 10px;
+  background: rgba(201, 168, 76, 0.08);
+  text-align: center;
+}
+
+.promo-applied-title {
+  margin: 0;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.promo-applied-price {
+  margin: 6px 0 10px;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  color: var(--cream);
+}
+
+.promo-remove {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.86rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.promo-remove:hover {
+  color: var(--cream);
+}
+
 .price-card .btn,
 .panel .btn {
   margin-top: 16px;

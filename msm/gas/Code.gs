@@ -5,7 +5,9 @@ const PAYSTACK_SECRET_KEY = "sk_test_753edc";
 const BASE_DOMAIN = "https://princeokoampah.com/msm";
 const SHEETS = { REG: "Registrations", AMB: "Ambassadors", CLICKS: "Clicks" };
 const SHEET_HEADERS = {};
-SHEET_HEADERS[SHEETS.REG] = ["Timestamp", "Full Name", "Email", "Phone", "Company", "Role", "Ticket Type", "Amount", "Paystack Ref", "Referral Code", "IP (optional)"];
+SHEET_HEADERS[SHEETS.REG] = ["Timestamp", "Full Name", "Email", "Phone", "Company", "Role", "Ticket Type", "Amount", "Paystack Ref", "Referral Code", "Promo Code", "IP (optional)"];
+const PROMO_MSMREV26_MAX_USES = 100;
+const ALLOWED_TICKET_TYPES = ["early bird", "regular"];
 SHEET_HEADERS[SHEETS.AMB] = ["Timestamp", "Full Name", "Email", "Phone", "Social Handle", "Why Ambassador", "Referral Code", "Magic Token", "Status"];
 SHEET_HEADERS[SHEETS.CLICKS] = ["Timestamp", "Referral Code", "IP (optional)"];
 
@@ -38,6 +40,7 @@ function doGet(e) {
   const action = (e.parameter.action || "").trim();
   try {
     if (action === "track_click") return jsonResponse(trackClick_(e.parameter.ref || ""));
+    if (action === "validate_promo") return jsonResponse(validatePromo_(e.parameter.code || ""));
     if (action === "get_dashboard") return jsonResponse(getDashboard_(e.parameter.token || ""));
     if (action === "get_admin") return jsonResponse(getAdmin_(e.parameter.adminToken || ""));
     return jsonResponse({ success: false, message: "Unsupported action" });
@@ -89,7 +92,15 @@ function validateRequired_(payload, required) {
 }
 
 function handleRegister_(p) {
-  validateRequired_(p, ["fullName", "email", "phone", "ticketType", "amount", "paystackRef"]);
+  validateRequired_(p, ["fullName", "email", "phone", "ticketType"]);
+  const ticketType = normalizeTicketType_(p.ticketType);
+  const promoCode = normalizePromoCode_(p.promoCode || "");
+
+  if (promoCode) {
+    return handlePromoRegister_(p, ticketType, promoCode);
+  }
+
+  validateRequired_(p, ["amount", "paystackRef"]);
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
@@ -98,34 +109,154 @@ function handleRegister_(p) {
       return { success: true, ref: p.paystackRef, deduped: true, message: "Registration already processed." };
     }
 
+    const expectedAmount = expectedTicketAmount_(ticketType);
+    if (Math.abs(Number(p.amount) - expectedAmount) > 0.1) {
+      throw new Error("Ticket price mismatch. Please refresh and try again.");
+    }
+
     const verification = verifyPaystackTransaction_(p.paystackRef);
     if (!verification.success) {
       throw new Error(verification.message || "Unable to verify payment.");
     }
 
     const amountPaid = Number(verification.amount || 0) / 100;
-    if (Math.abs(amountPaid - Number(p.amount)) > 0.1) throw new Error("Payment amount mismatch.");
+    if (Math.abs(amountPaid - expectedAmount) > 0.1) throw new Error("Payment amount mismatch.");
 
-    sh_(SHEETS.REG).appendRow([
-      new Date(),
-      p.fullName,
-      p.email,
-      p.phone,
-      p.company || "",
-      p.role || "",
-      p.ticketType,
-      Number(p.amount),
-      p.paystackRef,
-      p.referralCode || "",
-      "",
-    ]);
-
-    sendTicketEmail_(p.fullName, p.email, p.ticketType, p.amount, p.paystackRef);
-    sendAdminNotification_(p);
+    appendRegistrationRow_(p, ticketType, expectedAmount, p.paystackRef, "", p.referralCode || "");
+    sendTicketEmail_(p.fullName, p.email, ticketType, expectedAmount, p.paystackRef, "");
+    sendAdminNotification_(p, ticketType, expectedAmount, "", p.paystackRef);
     return { success: true, ref: p.paystackRef };
   } finally {
     lock.releaseLock();
   }
+}
+
+function handlePromoRegister_(p, ticketType, promoCode) {
+  assertPromoRedeemable_(promoCode, p.email);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const ref = generatePromoRef_(promoCode);
+    const existing = findRegistrationByPaystackRef_(ref);
+    if (existing) {
+      return { success: true, ref: ref, deduped: true, message: "Registration already processed." };
+    }
+
+    const registration = {
+      fullName: p.fullName,
+      email: p.email,
+      phone: p.phone,
+      company: p.company || "",
+      role: p.role || "",
+      referralCode: p.referralCode || "",
+    };
+    appendRegistrationRow_(registration, ticketType, 0, ref, promoCode, registration.referralCode);
+    sendTicketEmail_(p.fullName, p.email, ticketType, 0, ref, promoCode);
+    sendAdminNotification_(registration, ticketType, 0, promoCode, ref);
+    return { success: true, ref: ref, sponsored: true };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function validatePromo_(code) {
+  try {
+    const normalized = normalizePromoCode_(code);
+    if (!normalized) return { success: false, message: "Enter a promo code." };
+    assertPromoRedeemable_(normalized, "");
+    return {
+      success: true,
+      amount: 0,
+      sponsor: "Revolead",
+      message: "Ticket covered by Revolead",
+    };
+  } catch (error) {
+    return { success: false, message: error.message || "Invalid promo code." };
+  }
+}
+
+function normalizePromoCode_(code) {
+  return String(code || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "");
+}
+
+function isValidPromoCode_(normalized) {
+  return normalized === "MSMREV26";
+}
+
+function assertPromoRedeemable_(normalized, email) {
+  if (!isValidPromoCode_(normalized)) throw new Error("Invalid promo code.");
+  if (countPromoUses_(normalized) >= PROMO_MSMREV26_MAX_USES) {
+    throw new Error("This promo code is no longer available.");
+  }
+  if (email && hasEmailUsedPromo_(email, normalized)) {
+    throw new Error("This email has already used this promo code.");
+  }
+}
+
+function countPromoUses_(normalized) {
+  return values_(SHEETS.REG).filter((r) => normalizePromoCode_(r["Promo Code"]) === normalized).length;
+}
+
+function hasEmailUsedPromo_(email, normalized) {
+  const targetEmail = String(email || "")
+    .trim()
+    .toLowerCase();
+  if (!targetEmail) return false;
+  return values_(SHEETS.REG).some((r) => {
+    return (
+      String(r["Email"] || "")
+        .trim()
+        .toLowerCase() === targetEmail && normalizePromoCode_(r["Promo Code"]) === normalized
+    );
+  });
+}
+
+function normalizeTicketType_(ticketType) {
+  const normalized = String(ticketType || "")
+    .trim()
+    .toLowerCase();
+  if (ALLOWED_TICKET_TYPES.indexOf(normalized) === -1) {
+    throw new Error("Invalid ticket type.");
+  }
+  return normalized === "early bird" ? "Early Bird" : "Regular";
+}
+
+function expectedTicketAmount_(ticketType) {
+  const normalized = String(ticketType || "")
+    .trim()
+    .toLowerCase();
+  if (normalized === "early bird") {
+    if (new Date() > new Date("2026-06-01T23:59:59Z")) throw new Error("Early bird tickets are no longer available.");
+    return 150;
+  }
+  if (normalized === "regular") return 200;
+  throw new Error("Invalid ticket type.");
+}
+
+function generatePromoRef_(normalized) {
+  const suffix = Utilities.getUuid().replace(/-/g, "").slice(0, 12).toUpperCase();
+  if (normalized === "MSMREV26") return "MSM-REV26-" + suffix;
+  return "MSM-PROMO-" + suffix;
+}
+
+function appendRegistrationRow_(p, ticketType, amount, paystackRef, promoCode, referralCode) {
+  sh_(SHEETS.REG).appendRow([
+    new Date(),
+    p.fullName,
+    p.email,
+    p.phone,
+    p.company || "",
+    p.role || "",
+    ticketType,
+    Number(amount),
+    paystackRef,
+    referralCode || "",
+    promoCode || "",
+    "",
+  ]);
 }
 
 function handleAmbassadorSignup_(p) {
@@ -194,6 +325,7 @@ function getAdmin_(adminToken) {
     amount: Number(r["Amount"]) || 0,
     paystackRef: r["Paystack Ref"],
     referralCode: r["Referral Code"],
+    promoCode: r["Promo Code"] || "",
   }));
   const ambassadorsRaw = values_(SHEETS.AMB);
   const clicks = values_(SHEETS.CLICKS);
@@ -275,28 +407,35 @@ function generateReferralCode_() {
 }
 
 function commissionFor_(ticketType, amount) {
+  if (Number(amount) === 0) return 0;
   if (String(ticketType).toLowerCase() === "early bird" || Number(amount) === 150) return 22.5;
   return 30;
 }
 
-function sendTicketEmail_(name, email, ticketType, amount, ref) {
+function sendTicketEmail_(name, email, ticketType, amount, ref, promoCode) {
+  const sponsored = Number(amount) === 0 && normalizePromoCode_(promoCode) === "MSMREV26";
+  const amountLine = sponsored
+    ? "Amount Paid: GHS 0.00<br>Coverage: Ticket covered by Revolead"
+    : "Amount Paid: GHS " + amount;
   const subject = "You're In! Your MSM Workshop Ticket";
   const html = '<div style="font-family:Montserrat,Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:28px;border:1px solid #c9a84c;max-width:560px;margin:auto;">' +
     '<h1 style="font-family:Bebas Neue,Arial,sans-serif;letter-spacing:1px;margin:0;color:#e0c070;">THE MSM WORKSHOP</h1>' +
     '<p style="margin:0 0 18px 0;">Mind. Skills. Momentum.</p><hr style="border-color:#c9a84c;" />' +
     '<h2 style="color:#ffffff;">&#127915; YOUR TICKET</h2>' +
-    "<p>Name: " + name + "<br>Ticket Type: " + ticketType + "<br>Amount Paid: GHS " + amount + "<br>Ticket ID: " + ref + "<br>Date: June 5, 2026<br>Location: Accra, Ghana</p>" +
+    "<p>Name: " + name + "<br>Ticket Type: " + ticketType + "<br>" + amountLine + "<br>Ticket ID: " + ref + "<br>Date: June 5, 2026<br>Location: Accra, Ghana</p>" +
     '<hr style="border-color:#c9a84c;" /><p>Please present this email at the entrance.<br>We look forward to seeing you.<br><br>— The MSM Workshop Team</p></div>';
   GmailApp.sendEmail(email, subject, "Your ticket is ready.", { htmlBody: html, name: "The MSM Workshop" });
 }
 
-function sendAdminNotification_(p) {
+function sendAdminNotification_(p, ticketType, amount, promoCode, paystackRef) {
   const subject = "New Registration — " + p.fullName;
   const referral = p.referralCode || "Direct";
   const timestamp = new Date();
+  const coverage = normalizePromoCode_(promoCode) === "MSMREV26" ? "Ticket covered by Revolead" : "";
   const body = "New registration received.\n\n" +
-    "Name: " + p.fullName + "\nEmail: " + p.email + "\nPhone: " + p.phone + "\nTicket Type: " + p.ticketType +
-    "\nAmount: GHS " + p.amount + "\nPaystack Ref: " + p.paystackRef + "\nReferred By: " + referral + "\nTime: " + timestamp;
+    "Name: " + p.fullName + "\nEmail: " + p.email + "\nPhone: " + p.phone + "\nTicket Type: " + ticketType +
+    "\nAmount: GHS " + amount + (coverage ? "\nCoverage: " + coverage : "") +
+    "\nPaystack Ref: " + paystackRef + "\nPromo Code: " + (promoCode || "—") + "\nReferred By: " + referral + "\nTime: " + timestamp;
   const html = '<div style="font-family:Montserrat,Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:24px;max-width:620px;margin:auto;border:1px solid #c9a84c;border-radius:10px;">' +
     '<div style="border-bottom:1px solid rgba(201,168,76,0.45);padding-bottom:12px;margin-bottom:16px;">' +
     '<h2 style="margin:0;font-family:Bebas Neue,Arial,sans-serif;letter-spacing:1px;color:#e0c070;">NEW REGISTRATION ALERT</h2>' +
@@ -305,9 +444,11 @@ function sendAdminNotification_(p) {
     '<tr><td style="padding:8px 0;color:#aaaaaa;">Name</td><td style="padding:8px 0;color:#ffffff;font-weight:600;">' + p.fullName + "</td></tr>" +
     '<tr><td style="padding:8px 0;color:#aaaaaa;">Email</td><td style="padding:8px 0;color:#ffffff;">' + p.email + "</td></tr>" +
     '<tr><td style="padding:8px 0;color:#aaaaaa;">Phone</td><td style="padding:8px 0;color:#ffffff;">' + p.phone + "</td></tr>" +
-    '<tr><td style="padding:8px 0;color:#aaaaaa;">Ticket Type</td><td style="padding:8px 0;color:#ffffff;">' + p.ticketType + "</td></tr>" +
-    '<tr><td style="padding:8px 0;color:#aaaaaa;">Amount</td><td style="padding:8px 0;color:#ffffff;">GHS ' + p.amount + "</td></tr>" +
-    '<tr><td style="padding:8px 0;color:#aaaaaa;">Paystack Ref</td><td style="padding:8px 0;color:#ffffff;">' + p.paystackRef + "</td></tr>" +
+    '<tr><td style="padding:8px 0;color:#aaaaaa;">Ticket Type</td><td style="padding:8px 0;color:#ffffff;">' + ticketType + "</td></tr>" +
+    '<tr><td style="padding:8px 0;color:#aaaaaa;">Amount</td><td style="padding:8px 0;color:#ffffff;">GHS ' + amount + "</td></tr>" +
+    (coverage ? '<tr><td style="padding:8px 0;color:#aaaaaa;">Coverage</td><td style="padding:8px 0;color:#ffffff;">' + coverage + "</td></tr>" : "") +
+    '<tr><td style="padding:8px 0;color:#aaaaaa;">Paystack Ref</td><td style="padding:8px 0;color:#ffffff;">' + paystackRef + "</td></tr>" +
+    '<tr><td style="padding:8px 0;color:#aaaaaa;">Promo Code</td><td style="padding:8px 0;color:#ffffff;">' + (promoCode || "—") + "</td></tr>" +
     '<tr><td style="padding:8px 0;color:#aaaaaa;">Referred By</td><td style="padding:8px 0;color:#ffffff;">' + referral + "</td></tr>" +
     '<tr><td style="padding:8px 0;color:#aaaaaa;">Time</td><td style="padding:8px 0;color:#ffffff;">' + timestamp + "</td></tr>" +
     "</table>" +

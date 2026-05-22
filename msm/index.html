@@ -242,6 +242,22 @@
           <input type="hidden" name="amount" id="amount" />
           <input type="hidden" name="referralCode" id="referralCode" />
           <input type="hidden" name="paystackRef" id="paystackRef" />
+          <input type="hidden" name="promoCode" id="promoCode" value="" />
+          <div class="promo-wrap">
+            <div class="field full">
+              <label for="promoCodeInput">Promo code</label>
+              <div class="promo-row">
+                <input id="promoCodeInput" name="promoCodeInput" autocomplete="off" placeholder="Enter code" />
+                <button type="button" class="btn" id="applyPromoBtn">Apply</button>
+              </div>
+            </div>
+            <p id="promoFeedback" class="promo-feedback muted" aria-live="polite"></p>
+            <div id="promoApplied" class="promo-applied" hidden>
+              <p class="promo-applied-title">Ticket covered by Revolead</p>
+              <p class="promo-applied-price">GHS 0.00</p>
+              <button type="button" class="promo-remove" id="removePromoBtn">Remove promo code</button>
+            </div>
+          </div>
           <button class="btn btn-primary" id="registerBtn" type="submit">SECURE YOUR SEAT NOW</button>
           <p id="registerStatus" class="status" aria-live="polite"></p>
         </form>
