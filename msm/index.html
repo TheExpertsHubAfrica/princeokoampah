@@ -11,6 +11,12 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="assets/css/styles.css" />
+    <script src="assets/js/config.js"></script>
+    <script>
+      if (window.MSM_CONFIG?.registrationSoldOut) {
+        document.documentElement.classList.add("is-sold-out");
+      }
+    </script>
     <script src="https://js.paystack.co/v1/inline.js"></script>
   </head>
   <body>
@@ -24,7 +30,7 @@
           <a href="#learn">What You'll Learn</a>
           <a href="#how">How It Works</a>
           <a href="#speakers">Speakers</a>
-          <a href="#register">Register</a>
+          <a href="#register" id="navRegisterLink">Register</a>
         </nav>
         <button class="hamburger" id="hamburger" aria-label="Toggle menu">☰</button>
       </div>
@@ -40,12 +46,12 @@
           and execute with consistency.
         </p>
         <p class="event-meta">June 5, 2026 · Accra, Ghana</p>
-        <div class="badges">
+        <div class="badges" id="heroBadges">
           <span class="pill pill-early-bird">Early Bird: GHS 150 <small id="countdown" class="countdown"></small></span>
           <span class="pill">Regular: GHS 200</span>
         </div>
-        <p class="muted">Seats are limited.</p>
-        <a href="#register" class="btn btn-primary">SECURE YOUR SEAT NOW</a>
+        <p class="muted" id="heroMeta">Seats are limited.</p>
+        <a href="#register" class="btn btn-primary" id="heroCta">SECURE YOUR SEAT NOW</a>
       </div>
     </section>
 
@@ -113,7 +119,7 @@
             You will not sit through long lectures. Each session focuses on simple frameworks and
             real examples plus access to a network of professionals.
           </p>
-          <a href="#register" class="btn btn-primary">SECURE YOUR SEAT NOW</a>
+          <a href="#register" class="btn btn-primary cta-register">SECURE YOUR SEAT NOW</a>
         </div>
         <div
           class="workshop-carousel img-placeholder"
@@ -212,6 +218,27 @@
 
     <section class="section" id="register">
       <div class="container">
+        <div id="soldOutPanel" class="sold-out-panel">
+          <p class="sub-kicker">THE MSM WORKSHOP</p>
+          <h2 class="section-title">SOLD OUT</h2>
+          <p class="section-sub">
+            Thank you for the incredible response. All seats for June 5, 2026 are now taken and registration is closed.
+          </p>
+          <p class="muted">Join the waitlist and we will contact you if a seat opens up.</p>
+          <form id="waitlistForm" class="panel">
+            <div class="form-grid">
+              <div class="field"><label for="waitlistName">Full Name *</label><input id="waitlistName" name="fullName" required /></div>
+              <div class="field"><label for="waitlistEmail">Email Address *</label><input id="waitlistEmail" name="email" type="email" required /></div>
+              <div class="field"><label for="waitlistPhone">Phone Number *</label><input id="waitlistPhone" name="phone" type="tel" required /></div>
+              <div class="field"><label for="waitlistCompany">Company / Organisation</label><input id="waitlistCompany" name="company" /></div>
+              <div class="field full"><label for="waitlistRole">Role / Occupation</label><input id="waitlistRole" name="role" /></div>
+            </div>
+            <button class="btn btn-primary" id="waitlistBtn" type="submit">JOIN THE WAITLIST</button>
+            <p id="waitlistStatus" class="status" aria-live="polite"></p>
+          </form>
+        </div>
+
+        <div id="registrationOpen">
         <h2 class="section-title">SECURE YOUR SEAT</h2>
         <p class="section-sub">Once seats are filled, registration closes.</p>
         <div class="price-grid">
@@ -261,6 +288,7 @@
           <button class="btn btn-primary" id="registerBtn" type="submit">SECURE YOUR SEAT NOW</button>
           <p id="registerStatus" class="status" aria-live="polite"></p>
         </form>
+        </div>
       </div>
     </section>
 
@@ -269,7 +297,7 @@
         <p class="kicker">You already have ideas.</p>
         <p class="kicker gold">The difference is execution.</p>
         <p>This workshop helps you build the skills that move you forward.</p>
-        <a href="#register" class="btn btn-primary">JOIN NOW</a>
+        <a href="#register" class="btn btn-primary" id="finalCta">JOIN NOW</a>
       </div>
     </section>
 
@@ -312,6 +340,17 @@
         <p class="muted">Would you like to join the MSM Attendees WhatsApp group now?</p>
         <button class="btn btn-primary" id="successModalJoinWhatsapp" type="button">JOIN WHATSAPP GROUP</button>
         <button class="btn" id="successModalOk" type="button">MAYBE LATER</button>
+      </div>
+    </div>
+
+    <div class="modal-overlay" id="waitlistModal" aria-hidden="true">
+      <div class="success-modal">
+        <button class="modal-close" id="waitlistModalClose" type="button" aria-label="Close">×</button>
+        <p class="sub-kicker">WAITLIST CONFIRMED</p>
+        <h3 class="section-title">You're on the list</h3>
+        <p>Thank you for joining the waitlist for <strong>The MSM Workshop</strong>.</p>
+        <p class="muted">If a seat becomes available, we will reach out by email.</p>
+        <button class="btn btn-primary" id="waitlistModalOk" type="button">GOT IT</button>
       </div>
     </div>
 

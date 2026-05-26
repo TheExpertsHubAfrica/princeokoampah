@@ -269,6 +269,34 @@ img {
   font-weight: 600;
 }
 
+.pill-sold-out {
+  border-color: #e07a7a;
+  color: #ffb4b4;
+  background: rgba(224, 122, 122, 0.12);
+  animation: none;
+}
+
+.sold-out-panel {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.sold-out-panel .section-title {
+  color: #ffb4b4;
+}
+
+#soldOutPanel {
+  display: none;
+}
+
+html.is-sold-out #soldOutPanel {
+  display: block;
+}
+
+html.is-sold-out #registrationOpen {
+  display: none;
+}
+
 .pill-early-bird {
   background: linear-gradient(130deg, rgba(201, 168, 76, 0.22), rgba(224, 192, 112, 0.1));
   border-color: rgba(224, 192, 112, 0.95);

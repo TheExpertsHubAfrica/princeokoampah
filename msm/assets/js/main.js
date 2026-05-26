@@ -1,7 +1,9 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbzJgd9wY15-eqp8M5fd86kZPPr4It13oMRh_sI88oGKk-Cr_LC01v2HJSznDBzk_qGCxg/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbw4hbh_KiOI0SLcB5410CDEcoLYwZo0JbMZdJfkkzWqiZPxw5rUxsFoGcy-T7U1uFvKeA/exec";
 const PAYSTACK_KEY = "pk_live_3d6ce753f1b6ef979bff8653d41ee33ac1a9c427";
 const EARLY_BIRD_END = new Date("2026-06-01T23:59:59Z");
 const ATTENDEES_WHATSAPP_URL = "https://chat.whatsapp.com/EF0BBIF0WBfCZqn0Pu3UcC?mode=gi_t";
+
+let registrationSoldOut = Boolean(window.MSM_CONFIG?.registrationSoldOut);
 
 const qs = (s) => document.querySelector(s);
 const qsa = (s) => Array.from(document.querySelectorAll(s));
@@ -261,6 +263,114 @@ function submitRegistration(payload) {
     headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
     body: urlEncode(payload),
   }).then((r) => r.json());
+}
+
+function submitWaitlist(payload) {
+  return fetch(`${GAS_URL}?action=waitlist`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body: urlEncode(payload),
+  }).then((r) => r.json());
+}
+
+async function fetchEventStatus() {
+  try {
+    const res = await fetch(`${GAS_URL}?action=event_status`);
+    const data = await res.json();
+    if (data.success && typeof data.soldOut === "boolean") {
+      registrationSoldOut = data.soldOut;
+      return;
+    }
+  } catch {
+    /* use config fallback */
+  }
+  registrationSoldOut = Boolean(window.MSM_CONFIG?.registrationSoldOut);
+}
+
+function applySoldOutUi() {
+  document.documentElement.classList.toggle("is-sold-out", registrationSoldOut);
+  document.body.classList.toggle("is-sold-out", registrationSoldOut);
+
+  const heroBadges = qs("#heroBadges");
+  const heroMeta = qs("#heroMeta");
+  const navRegister = qs("#navRegisterLink");
+  const registerCtas = qsa(".cta-register, #heroCta, #finalCta");
+
+  if (!registrationSoldOut) return;
+
+  if (heroBadges) {
+    heroBadges.innerHTML = '<span class="pill pill-sold-out">Sold Out</span>';
+  }
+  if (heroMeta) {
+    heroMeta.textContent = "Registration is closed. Join the waitlist for a chance to attend.";
+  }
+  if (navRegister) navRegister.textContent = "Waitlist";
+  registerCtas.forEach((el) => {
+    el.textContent = "JOIN THE WAITLIST";
+    el.setAttribute("href", "#register");
+  });
+}
+
+function setupWaitlistModal() {
+  const modal = qs("#waitlistModal");
+  const closeBtn = qs("#waitlistModalClose");
+  const okBtn = qs("#waitlistModalOk");
+  if (!modal) return { open: () => {}, close: () => {} };
+
+  const close = () => {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  };
+
+  const open = () => {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  };
+
+  closeBtn?.addEventListener("click", close);
+  okBtn?.addEventListener("click", close);
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && modal.classList.contains("open")) close();
+  });
+
+  return { open, close };
+}
+
+function setupWaitlistForm() {
+  const form = qs("#waitlistForm");
+  const status = qs("#waitlistStatus");
+  const button = qs("#waitlistBtn");
+  const waitlistModal = setupWaitlistModal();
+  if (!form || !button) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setStatus(status, "", "");
+    const data = Object.fromEntries(new FormData(form).entries());
+    setLoading(button, true, "JOIN THE WAITLIST", "Submitting...");
+    try {
+      const res = await submitWaitlist({
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone,
+        company: data.company || "",
+        role: data.role || "",
+      });
+      if (!res.success) throw new Error(res.message || "Unable to join the waitlist.");
+      setStatus(status, res.message || "You are on the waitlist.", "success");
+      form.reset();
+      waitlistModal.open();
+    } catch (err) {
+      setStatus(status, err.message || "Something went wrong. Please try again.", "error");
+    } finally {
+      setLoading(button, false, "JOIN THE WAITLIST");
+    }
+  });
 }
 
 function launchPaystack(formData, onSuccess, onClose) {
@@ -527,13 +637,19 @@ function setupSpeakerBios() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await fetchEventStatus();
+  applySoldOutUi();
   setupReferralTracking();
   setupHeaderAndNav();
-  setupCountdown();
-  setupPricing();
-  setupPromoCode();
-  setupRegistrationForm();
+  if (registrationSoldOut) {
+    setupWaitlistForm();
+  } else {
+    setupCountdown();
+    setupPricing();
+    setupPromoCode();
+    setupRegistrationForm();
+  }
   setupWorkshopCarousel();
   setupSpeakerBios();
 });

@@ -3,13 +3,15 @@ const ADMIN_EMAILS = ["deforexsp@gmail.com", "mrgyan@veritrack.cloud"];
 const ADMIN_TOKEN = "msmadmin2026secure";
 const PAYSTACK_SECRET_KEY = "sk_test_753edc";
 const BASE_DOMAIN = "https://princeokoampah.com/msm";
-const SHEETS = { REG: "Registrations", AMB: "Ambassadors", CLICKS: "Clicks" };
+const REGISTRATION_SOLD_OUT = true;
+const SHEETS = { REG: "Registrations", AMB: "Ambassadors", CLICKS: "Clicks", WAITLIST: "Waitlist" };
 const SHEET_HEADERS = {};
 SHEET_HEADERS[SHEETS.REG] = ["Timestamp", "Full Name", "Email", "Phone", "Company", "Role", "Ticket Type", "Amount", "Paystack Ref", "Referral Code", "Promo Code", "IP (optional)"];
 const PROMO_MSMREV26_MAX_USES = 100;
 const ALLOWED_TICKET_TYPES = ["early bird", "regular"];
 SHEET_HEADERS[SHEETS.AMB] = ["Timestamp", "Full Name", "Email", "Phone", "Social Handle", "Why Ambassador", "Referral Code", "Magic Token", "Status"];
 SHEET_HEADERS[SHEETS.CLICKS] = ["Timestamp", "Referral Code", "IP (optional)"];
+SHEET_HEADERS[SHEETS.WAITLIST] = ["Timestamp", "Full Name", "Email", "Phone", "Company", "Role"];
 
 function setupSheets() {
   const spreadsheet = ss_();
@@ -39,6 +41,7 @@ function setupSheets() {
 function doGet(e) {
   const action = (e.parameter.action || "").trim();
   try {
+    if (action === "event_status") return jsonResponse(getEventStatus_());
     if (action === "track_click") return jsonResponse(trackClick_(e.parameter.ref || ""));
     if (action === "validate_promo") return jsonResponse(validatePromo_(e.parameter.code || ""));
     if (action === "get_dashboard") return jsonResponse(getDashboard_(e.parameter.token || ""));
@@ -53,6 +56,7 @@ function doPost(e) {
   const action = (e.parameter.action || "").trim();
   try {
     if (action === "register") return jsonResponse(handleRegister_(e.parameter));
+    if (action === "waitlist") return jsonResponse(handleWaitlist_(e.parameter));
     if (action === "ambassador_signup") return jsonResponse(handleAmbassadorSignup_(e.parameter));
     return jsonResponse({ success: false, message: "Unsupported action" });
   } catch (error) {
@@ -91,7 +95,70 @@ function validateRequired_(payload, required) {
   });
 }
 
+function getEventStatus_() {
+  return { success: true, soldOut: REGISTRATION_SOLD_OUT };
+}
+
+function assertRegistrationOpen_() {
+  if (REGISTRATION_SOLD_OUT) {
+    throw new Error("Registration is closed. This event is sold out — join the waitlist instead.");
+  }
+}
+
+function handleWaitlist_(p) {
+  if (!REGISTRATION_SOLD_OUT) {
+    throw new Error("Waitlist is not open while registration is available.");
+  }
+  validateRequired_(p, ["fullName", "email", "phone"]);
+  const email = String(p.email).trim().toLowerCase();
+  if (hasWaitlistEmail_(email)) {
+    return { success: true, deduped: true, message: "You are already on the waitlist." };
+  }
+  sh_(SHEETS.WAITLIST).appendRow([
+    new Date(),
+    p.fullName,
+    p.email,
+    p.phone,
+    p.company || "",
+    p.role || "",
+  ]);
+  sendWaitlistConfirmation_(p.fullName, p.email);
+  sendWaitlistAdminNotification_(p);
+  return { success: true, message: "You have been added to the waitlist." };
+}
+
+function hasWaitlistEmail_(email) {
+  return values_(SHEETS.WAITLIST).some((row) => {
+    return (
+      String(row["Email"] || "")
+        .trim()
+        .toLowerCase() === email
+    );
+  });
+}
+
+function sendWaitlistConfirmation_(name, email) {
+  const subject = "You're on the MSM Workshop Waitlist";
+  const html =
+    '<div style="font-family:Montserrat,Arial,sans-serif;background:#0d0d0d;color:#f5f0e8;padding:28px;border:1px solid #c9a84c;max-width:560px;margin:auto;">' +
+    '<h1 style="font-family:Bebas Neue,Arial,sans-serif;letter-spacing:1px;margin:0;color:#e0c070;">THE MSM WORKSHOP</h1>' +
+    "<p>Hi " + name + ",</p>" +
+    "<p>Thank you for joining the waitlist. The workshop is currently <strong>sold out</strong>.</p>" +
+    "<p>If a seat becomes available, we will contact you at this email address.</p>" +
+    "<p>Date: June 5, 2026<br>Location: Accra, Ghana</p>" +
+    "<p>— The MSM Workshop Team</p></div>";
+  GmailApp.sendEmail(email, subject, "You are on the waitlist.", { htmlBody: html, name: "The MSM Workshop" });
+}
+
+function sendWaitlistAdminNotification_(p) {
+  const subject = "New Waitlist Sign-up — " + p.fullName;
+  const body =
+    "New waitlist entry.\n\nName: " + p.fullName + "\nEmail: " + p.email + "\nPhone: " + p.phone + "\nCompany: " + (p.company || "—") + "\nRole: " + (p.role || "—");
+  ADMIN_EMAILS.forEach((email) => GmailApp.sendEmail(email, subject, body, { name: "The MSM Workshop" }));
+}
+
 function handleRegister_(p) {
+  assertRegistrationOpen_();
   validateRequired_(p, ["fullName", "email", "phone", "ticketType"]);
   const ticketType = normalizeTicketType_(p.ticketType);
   const promoCode = normalizePromoCode_(p.promoCode || "");
@@ -161,6 +228,7 @@ function handlePromoRegister_(p, ticketType, promoCode) {
 
 function validatePromo_(code) {
   try {
+    assertRegistrationOpen_();
     const normalized = normalizePromoCode_(code);
     if (!normalized) return { success: false, message: "Enter a promo code." };
     assertPromoRedeemable_(normalized, "");
