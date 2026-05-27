@@ -302,7 +302,7 @@ function applySoldOutUi() {
     heroBadges.innerHTML = '<span class="pill pill-sold-out">Sold Out</span>';
   }
   if (heroMeta) {
-    heroMeta.textContent = "Registration is closed. Join the waitlist for a chance to attend.";
+    heroMeta.textContent = "Registration is closed. Join the waitlist for the next MSM Workshop.";
   }
   if (navRegister) navRegister.textContent = "Waitlist";
   registerCtas.forEach((el) => {
