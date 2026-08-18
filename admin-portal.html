@@ -606,7 +606,12 @@
       if (file) {
         // Validate file size (5MB)
         if (file.size > 5 * 1024 * 1024) {
-          alert('File size must be less than 5MB');
+          const dashboardAlert = document.getElementById('dashboard-alert');
+          showAlert(
+            dashboardAlert,
+            'Flyer image is too large. Please upload a JPG or PNG under 5MB, then try again.',
+            'error'
+          );
           e.target.value = '';
           return;
         }
@@ -705,7 +710,8 @@
             loadCurrentEvent();
           }, 1000);
         } else {
-          showAlert(alertDiv, result.message || 'Failed to update event', 'error');
+          const friendly = toFriendlyValidationMessage_(result.message);
+          showAlert(alertDiv, friendly, 'error');
         }
       } catch (error) {
         loadingSpinner.classList.remove('show');
@@ -713,7 +719,7 @@
         submitBtn.innerHTML = '<i class="bi bi-cloud-upload"></i> Update Event';
         
         console.error('Update error:', error);
-        showAlert(alertDiv, 'Failed to update event. Please try again.', 'error');
+        showAlert(alertDiv, toFriendlyValidationMessage_(error && error.message), 'error');
       }
     }
 
@@ -725,6 +731,31 @@
       setTimeout(() => {
         element.classList.remove('show');
       }, 5000);
+    }
+
+    // Make backend/JS validation errors clearer and more actionable
+    function toFriendlyValidationMessage_(message) {
+      var msg = String(message || '').trim();
+      var lower = msg.toLowerCase();
+
+      if (!msg) return 'Failed to update event. Please check your inputs and try again.';
+
+      // Common Apps Script patterns
+      if (
+        lower.indexOf('missing required') !== -1 ||
+        lower.indexOf('required field') !== -1 ||
+        lower.indexOf('missing') !== -1 ||
+        lower.indexOf('validation') !== -1
+      ) {
+        return (
+          'Please complete all required event fields before updating: ' +
+          'Event Title, Event Description, Event Date, Event Time, Event Format, Event Investment, ' +
+          'and select an Event Flyer image (JPG/PNG under 5MB).'
+        );
+      }
+
+      // Fallback: show what we got
+      return msg;
     }
   </script>
 
