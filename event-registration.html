@@ -15,7 +15,7 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com" rel="preconnect">
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Raleway:wght@600;700&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
   <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -712,7 +712,7 @@
   </section>
 
   <!-- Countdown Timer Section -->
-  <section class="countdown-section" data-aos="fade-up">
+  <section class="countdown-section" data-aos="fade-up" id="countdown-section" style="display: none;">
     <div class="container countdown-container">
       <h2 class="countdown-title" id="countdown-title">Event Starts In</h2>
       <div id="countdown-timer" class="countdown-timer">
@@ -765,21 +765,21 @@
         <div id="event-content" class="row align-items-center" style="display: none;">
           <div class="col-lg-5 col-md-6" data-aos="fade-right">
             <div class="event-flyer-container">
-              <img src="assets/img/Events/IMG_0211.JPG" alt="Event Flyer" class="event-flyer" id="event-flyer-img">
+              <img src="assets/img/Events/optimized/IMG_0211.jpg" alt="Event Flyer" class="event-flyer" id="event-flyer-img">
             </div>
           </div>
           <div class="col-lg-7 col-md-6" data-aos="fade-left">
             <div class="event-description">
-              <h2 id="event-title">Loading...</h2>
+              <h2 id="event-title">Upcoming Event</h2>
               <div id="event-description-content">
-                <p>Loading event details...</p>
+                <p>Event details are loading. If nothing appears, check back shortly or join the newsletter for updates.</p>
               </div>
               <p id="event-details">
-                <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">-</span><br>
-                <strong style="color: #d0bb8e;">Time:</strong> <span id="event-time">-</span><br>
-                <strong style="color: #d0bb8e;">Format:</strong> <span id="event-format">-</span><br>
-                <strong style="color: #d0bb8e;">Venue:</strong> <span id="event-venue">-</span><br>
-                <strong style="color: #d0bb8e;">Investment:</strong> <span id="event-investment">-</span>
+                <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">TBA</span><br>
+                <strong style="color: #d0bb8e;">Time:</strong> <span id="event-time">TBA</span><br>
+                <strong style="color: #d0bb8e;">Format:</strong> <span id="event-format">TBA</span><br>
+                <strong style="color: #d0bb8e;">Venue:</strong> <span id="event-venue">Check event flyer</span><br>
+                <strong style="color: #d0bb8e;">Investment:</strong> <span id="event-investment">TBA</span>
               </p>
             </div>
           </div>
@@ -1062,15 +1062,41 @@
         }
       } catch (error) {
         console.error('Error loading event data:', error);
-        // Hide loading and show content anyway (fallback to static content)
-        document.getElementById('event-loading').style.display = 'none';
-        document.getElementById('event-content').style.display = 'flex';
-        
-        // Fallback: try to extract pricing from existing content
-        currentEventPricing = document.getElementById('event-investment')?.textContent || 'Free';
-        checkPaymentRequirement(currentEventPricing);
-        updateSubmitButtonText();
+        applyEventFallback_();
       }
+    }
+
+    function applyEventFallback_() {
+      document.getElementById('event-loading').style.display = 'none';
+      document.getElementById('event-content').style.display = 'flex';
+
+      const titleElement = document.getElementById('event-title');
+      const descriptionContent = document.getElementById('event-description-content');
+      if (titleElement) titleElement.textContent = 'Upcoming Event';
+      if (descriptionContent) {
+        descriptionContent.innerHTML =
+          '<p>We could not load the latest event details right now. Please refresh the page, or check back shortly.</p>' +
+          '<p><a href="index.html#newsletter" style="color:#d0bb8e;font-weight:600;">Get notified about the next event</a></p>';
+      }
+
+      const dateSpan = document.getElementById('event-date');
+      const timeSpan = document.getElementById('event-time');
+      const formatSpan = document.getElementById('event-format');
+      const venueSpan = document.getElementById('event-venue');
+      const investmentSpan = document.getElementById('event-investment');
+      if (dateSpan) dateSpan.textContent = 'TBA';
+      if (timeSpan) timeSpan.textContent = 'TBA';
+      if (formatSpan) formatSpan.textContent = 'TBA';
+      if (venueSpan) venueSpan.textContent = 'Check back soon';
+      if (investmentSpan) investmentSpan.textContent = 'TBA';
+
+      const countdownSection = document.getElementById('countdown-section');
+      if (countdownSection) countdownSection.style.display = 'none';
+
+      currentEventPricing = 'Free';
+      checkPaymentRequirement(currentEventPricing);
+      updateSubmitButtonText();
+      updateHiddenFields();
     }
     
     // Check if payment is required based on investment text
@@ -1244,12 +1270,15 @@
     function initializeCountdown(dateStr, timeStr) {
       try {
         const dateTime = parseEventDateTime_(dateStr, timeStr);
+        const countdownSection = document.getElementById('countdown-section');
         if (!dateTime) {
           console.error('Invalid date/time after parsing:', { dateStr, timeStr });
+          if (countdownSection) countdownSection.style.display = 'none';
           return;
         }
 
         eventDateTime = dateTime;
+        if (countdownSection) countdownSection.style.display = 'block';
 
         if (countdownInterval) {
           clearInterval(countdownInterval);
@@ -1259,6 +1288,8 @@
         countdownInterval = setInterval(updateCountdown, 1000);
       } catch (error) {
         console.error('Error initializing countdown:', error);
+        const countdownSection = document.getElementById('countdown-section');
+        if (countdownSection) countdownSection.style.display = 'none';
       }
     }
 
@@ -1528,8 +1559,8 @@
           submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
           loadingSpinner.style.display = 'none';
           
-          alertMessage.className = 'alert alert-error';
-          alertMessage.innerHTML = '<strong>Payment Cancelled!</strong> You cancelled the payment process.';
+          alertMessage.className = 'alert alert-info';
+          alertMessage.innerHTML = '<strong>Payment not completed.</strong> You can try again whenever you are ready — your seat is not reserved until payment succeeds.';
           alertMessage.style.display = 'block';
           alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
         },
@@ -1611,21 +1642,18 @@
         };
         
         xhr.onerror = function() {
-          // Even if we get an error, the submission might have succeeded
-          // Apps Script redirects can cause false errors
+          // Apps Script redirects can trigger browser network errors even when the
+          // registration reached the server. Do not fake a success state.
           loadingSpinner.style.display = 'none';
-          
-          // Hide form and show success section
-          document.getElementById('registration-form-container').style.display = 'none';
-          const successSection = document.getElementById('success-section');
-          successSection.style.display = 'block';
-          
-          // Scroll to success section
-          successSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          
-          // Reset button state
           submitBtn.disabled = false;
           submitBtn.textContent = requiresPayment ? 'Pay & Register' : 'Register Now';
+
+          alertMessage.className = 'alert alert-info';
+          alertMessage.innerHTML =
+            '<strong>Almost there.</strong> Your request was sent, but the browser could not confirm the response. ' +
+            'Check your email for a confirmation. If nothing arrives in a few minutes, register again or contact support.';
+          alertMessage.style.display = 'block';
+          alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
         };
         
         xhr.send(params.toString());

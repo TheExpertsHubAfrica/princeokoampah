@@ -59,13 +59,20 @@
   });
 
   /**
-   * Preloader
+   * Preloader — dismiss early so users are not blocked by large images.
    */
   const preloader = document.querySelector('#preloader');
   if (preloader) {
-    window.addEventListener('load', () => {
-      preloader.remove();
-    });
+    const hidePreloader = () => {
+      if (preloader && preloader.parentNode) preloader.remove();
+    };
+    if (document.readyState === 'interactive' || document.readyState === 'complete') {
+      hidePreloader();
+    } else {
+      document.addEventListener('DOMContentLoaded', hidePreloader);
+    }
+    // Safety timeout in case DOMContentLoaded already fired awkwardly
+    setTimeout(hidePreloader, 1200);
   }
 
   /**

@@ -301,29 +301,54 @@ h6 {
   .title::after {
     display: none;
   }
+  .landing {
+    height: auto;
+    min-height: 70vh;
+    padding: 4rem 1rem 2rem;
+    justify-content: center;
+    gap: 1rem;
+  }
+
   .landing .landingDescription {
-    position: absolute; 
-    bottom: -180px; 
-    font-size: 14px; 
-    padding: 25px;
+    position: static;
+    font-size: 14px;
+    padding: 0 12px;
     font-weight: 400;
+    margin: 0;
+    max-width: 32rem;
   }
 
   .typed {
-    font-size: 25px;
+    font-size: 22px;
     color: var(--heading-color);
     position: relative;
-    top: -12px;
+    top: 0;
+  }
+
+  .landing > p[style*="position: absolute"] {
+    position: static !important;
+    top: auto !important;
+    font-size: 22px !important;
+    margin: 0 0 0.5rem;
   }
 
   .callToActions {
-    width: fit-content;
+    width: 100%;
+    max-width: 22rem;
     display: flex;
-    align-items: center;
-    position: absolute; 
-    bottom: -230px; 
+    flex-direction: column;
+    align-items: stretch;
+    position: static;
     font-size: 40px;
-    gap: 12px; /* Added spacing between children */
+    gap: 10px;
+    margin-top: 0.5rem;
+  }
+
+  .callToActions .mbaButton {
+    width: 100%;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 0.7rem 1rem;
   }
 }
 
@@ -1425,6 +1450,8 @@ section,
 .callToActions {
   width: fit-content;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   align-items: center;
   position: absolute; 
   top: 150px; 
