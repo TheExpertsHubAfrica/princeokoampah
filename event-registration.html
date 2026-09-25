@@ -770,9 +770,9 @@
           </div>
           <div class="col-lg-7 col-md-6" data-aos="fade-left">
             <div class="event-description">
-              <h2 id="event-title">Upcoming Event</h2>
+              <h2 id="event-title">Loading event…</h2>
               <div id="event-description-content">
-                <p>Event details are loading. If nothing appears, check back shortly or join the newsletter for updates.</p>
+                <p>Fetching the latest event details…</p>
               </div>
               <p id="event-details">
                 <strong style="color: #d0bb8e;">Date:</strong> <span id="event-date">TBA</span><br>
@@ -967,7 +967,7 @@
   <!-- Form Submission Script -->
   <script>
     // Event registration Apps Script web app — used for current event data AND form posts
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGvF06mr7hffcJqWg6L9OJtFKloGVMFluudVhtxjaRpGUqb8IftONCpgSYS2TGpHuK/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdObg3oQQmqLXLf60Kz0NN-95WkcBSxpUF1WWEuyS67hDJcDvTW2UBA6HArx8Tz1VC/exec';
     const ADMIN_BACKEND_URL = SCRIPT_URL;
     
     // Paystack Configuration
@@ -1031,6 +1031,10 @@
           currentEventPricing = event.eventInvestment || 'Free';
           if (investmentSpan) investmentSpan.textContent = currentEventPricing || 'TBA';
           
+          loadedEventTitle = eventTitle;
+          loadedEventDate = String(event.eventDate || '').trim();
+          eventDataReady = true;
+          
           console.log('Event details updated:', {
             date: event.eventDate,
             time: event.eventTime,
@@ -1055,8 +1059,9 @@
           // Update submit button text based on payment requirement
           updateSubmitButtonText();
           
-          // Update hidden form fields
+          // Update hidden form fields with the real loaded event only
           updateHiddenFields();
+          setRegistrationAvailability_(true);
         } else {
           throw new Error('No event data found');
         }
@@ -1066,13 +1071,32 @@
       }
     }
 
+    let eventDataReady = false;
+    let loadedEventTitle = '';
+    let loadedEventDate = '';
+
+    function isPlaceholderEventName_(name) {
+      const value = String(name || '').trim().toLowerCase();
+      return !value ||
+        value === 'upcoming event' ||
+        value === 'loading event…' ||
+        value === 'loading event...' ||
+        value === 'loading...' ||
+        value === 'event details unavailable' ||
+        value === 'tba';
+    }
+
     function applyEventFallback_() {
+      eventDataReady = false;
+      loadedEventTitle = '';
+      loadedEventDate = '';
+
       document.getElementById('event-loading').style.display = 'none';
       document.getElementById('event-content').style.display = 'flex';
 
       const titleElement = document.getElementById('event-title');
       const descriptionContent = document.getElementById('event-description-content');
-      if (titleElement) titleElement.textContent = 'Upcoming Event';
+      if (titleElement) titleElement.textContent = 'Event details unavailable';
       if (descriptionContent) {
         descriptionContent.innerHTML =
           '<p>We could not load the latest event details right now. Please refresh the page, or check back shortly.</p>' +
@@ -1093,10 +1117,53 @@
       const countdownSection = document.getElementById('countdown-section');
       if (countdownSection) countdownSection.style.display = 'none';
 
+      const eventNameField = document.getElementById('eventNameField');
+      const eventDateField = document.getElementById('eventDateField');
+      if (eventNameField) eventNameField.value = '';
+      if (eventDateField) eventDateField.value = '';
+
       currentEventPricing = 'Free';
       checkPaymentRequirement(currentEventPricing);
       updateSubmitButtonText();
-      updateHiddenFields();
+      setRegistrationAvailability_(false, 'Event details are unavailable right now. Please refresh and try again.');
+    }
+
+    function setRegistrationAvailability_(enabled, message) {
+      const formContainer = document.getElementById('registration-form-container');
+      const closedNotice = document.getElementById('registration-closed-notice');
+      const localSubmitBtn = document.getElementById('submit-btn');
+      if (localSubmitBtn) localSubmitBtn.disabled = !enabled;
+
+      if (!enabled) {
+        if (formContainer) formContainer.style.display = 'none';
+        if (closedNotice) {
+          closedNotice.style.display = 'block';
+          const heading = closedNotice.querySelector('h3');
+          const paragraphs = closedNotice.querySelectorAll('p');
+          if (heading) heading.textContent = 'Registration temporarily unavailable';
+          if (paragraphs[0]) paragraphs[0].textContent = message || 'Please refresh the page to load the current event.';
+          if (paragraphs[1]) paragraphs[1].textContent = 'Once event details load successfully, registration will open again.';
+        }
+      } else if (formContainer) {
+        formContainer.style.display = 'block';
+        if (closedNotice) closedNotice.style.display = 'none';
+      }
+    }
+
+    // Populate hidden form fields from the loaded backend event only
+    function updateHiddenFields() {
+      const eventNameField = document.getElementById('eventNameField');
+      const eventDateField = document.getElementById('eventDateField');
+
+      if (eventNameField) {
+        eventNameField.value = eventDataReady && !isPlaceholderEventName_(loadedEventTitle)
+          ? loadedEventTitle
+          : '';
+      }
+
+      if (eventDateField) {
+        eventDateField.value = eventDataReady ? (loadedEventDate || '') : '';
+      }
     }
     
     // Check if payment is required based on investment text
@@ -1248,22 +1315,6 @@
       const endDate = new Date(EARLY_BIRD_END_DATE);
       const options = { day: 'numeric', month: 'long', year: 'numeric' };
       return endDate.toLocaleDateString('en-US', options);
-    }
-    
-    // Populate hidden form fields from page content
-    function updateHiddenFields() {
-      const eventTitle = document.getElementById('event-title');
-      const eventDate = document.getElementById('event-date');
-      const eventNameField = document.getElementById('eventNameField');
-      const eventDateField = document.getElementById('eventDateField');
-      
-      if (eventTitle && eventNameField) {
-        eventNameField.value = eventTitle.textContent.trim();
-      }
-      
-      if (eventDate && eventDateField) {
-        eventDateField.value = eventDate.textContent.trim();
-      }
     }
     
     // Initialize countdown timer
@@ -1453,17 +1504,14 @@
     
     // Load event data on page load
     document.addEventListener('DOMContentLoaded', async function() {
+      setRegistrationAvailability_(false, 'Loading event details. Registration will open shortly.');
       // Try to load dynamic data first
       if (ADMIN_BACKEND_URL && ADMIN_BACKEND_URL !== 'YOUR_ADMIN_BACKEND_URL_HERE') {
         await loadEventData();
       } else {
-        // Use static content and update hidden fields
-        currentEventPricing = 'Early Bird Registration Available';
-        checkPaymentRequirement(currentEventPricing);
-        updateSubmitButtonText();
-        updateHiddenFields();
+        applyEventFallback_();
       }
-      console.log('Page loaded - Payment settings:', { requiresPayment, paymentAmount, currentEventPricing });
+      console.log('Page loaded - Payment settings:', { requiresPayment, paymentAmount, currentEventPricing, eventDataReady, loadedEventTitle });
     });
 
     const form = document.getElementById('registration-form');
@@ -1678,6 +1726,17 @@
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
+
+      updateHiddenFields();
+      const submittedEventName = String(document.getElementById('eventNameField').value || '').trim();
+
+      if (!eventDataReady || isPlaceholderEventName_(submittedEventName)) {
+        alertMessage.className = 'alert alert-error';
+        alertMessage.innerHTML = '<strong>Please wait.</strong> Event details have not loaded yet. Refresh the page and try again once the event title appears.';
+        alertMessage.style.display = 'block';
+        alertMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
       
       // Re-check payment requirement as a safeguard (in case event data loaded late)
       if (currentEventPricing) {
